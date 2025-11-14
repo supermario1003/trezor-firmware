@@ -276,9 +276,20 @@ static void kernel_panic(const systask_postmortem_t *pminfo) {
   // We never get here
 }
 
+ts_t __wur func() {
+  return TS_OK;
+}
+
+void test() {
+  func();
+}
+
+
 int main(void) {
   // Initialize system's core services
   system_init(&kernel_panic);
+
+  test();
 
   // Initialize hardware drivers
   drivers_init();

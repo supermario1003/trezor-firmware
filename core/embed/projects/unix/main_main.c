@@ -9,7 +9,35 @@
 
 MP_NOINLINE int main_(int argc, char **argv);
 
+#include "secbool.h"
+
+ts_t  __wur func() {
+  return TS_OK;
+}
+
+void test() {
+
+  ts_t status = func();
+
+  if (ts_eq(status, TS_OK)) {
+    // do nothing
+  } else if (ts_eq(status, TS_ERROR)) {
+    // do nothing
+  }
+
+  if (ts_error(func())) {
+    // do nothing
+  }
+
+  func();
+}
+
+
 int main(int argc, char **argv) {
+
+  test();
+
+
 #ifdef USE_SECP256K1_ZKP
   ensure(sectrue * (zkp_context_init() == 0), NULL);
 #endif
