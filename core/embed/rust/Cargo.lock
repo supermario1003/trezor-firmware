@@ -29,7 +29,7 @@ dependencies = [
  "regex",
  "rustc-hash",
  "shlex",
- "syn 2.0.65",
+ "syn 2.0.108",
 ]
 
 [[package]]
