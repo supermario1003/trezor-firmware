@@ -635,7 +635,7 @@ impl FirmwareUI for UIDelizia {
             br_code,
             confirm_address,
             confirm_extra,
-            summary_items_params,
+            summary_items_params, // << this
             fee_items_params,
             summary_br_name,
             summary_br_code,

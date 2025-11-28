@@ -540,8 +540,6 @@ extern "C" fn new_flow_confirm_output(n_args: usize, args: *const Obj, kwargs: *
         let address_item: Option<Obj> =
             kwargs.get(Qstr::MP_QSTR_address_item)?.try_into_option()?;
         let extra_item: Option<Obj> = kwargs.get(Qstr::MP_QSTR_extra_item)?.try_into_option()?;
-        let summary_items: Option<Obj> =
-            kwargs.get(Qstr::MP_QSTR_summary_items)?.try_into_option()?;
         let fee_items: Option<Obj> = kwargs.get(Qstr::MP_QSTR_fee_items)?.try_into_option()?;
         let summary_title: Option<TString> =
             kwargs.get(Qstr::MP_QSTR_summary_title)?.try_into_option()?;
@@ -569,7 +567,7 @@ extern "C" fn new_flow_confirm_output(n_args: usize, args: *const Obj, kwargs: *
             br_name,
             address_item,
             extra_item,
-            summary_items,
+            summary_items, // THIS
             fee_items,
             summary_title,
             summary_br_code,
@@ -1731,7 +1729,6 @@ pub static mp_module_trezorui_api: Module = obj_module! {
     ///     br_name: str,
     ///     address_item: PropertyType | None,
     ///     extra_item: PropertyType | None,
-    ///     summary_items: Sequence[PropertyType] | None = None,
     ///     fee_items: Sequence[PropertyType] | None = None,
     ///     summary_title: str | None = None,
     ///     summary_br_code: ButtonRequestType | None = None,

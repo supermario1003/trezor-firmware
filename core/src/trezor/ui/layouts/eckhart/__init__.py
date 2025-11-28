@@ -659,7 +659,6 @@ async def confirm_output(
                 extra_item=None,
                 br_code=br_code,
                 br_name="confirm_output",
-                summary_items=None,
                 fee_items=None,
                 summary_title=None,
                 summary_br_name=None,

@@ -676,7 +676,7 @@ impl FirmwareUI for UIEckhart {
         br_name: TString<'static>,
         address_item: Option<Obj>,
         extra_item: Option<Obj>,
-        summary_items: Option<Obj>,
+        summary_items: Option<Obj>, // << this
         fee_items: Option<Obj>,
         summary_title: Option<TString<'static>>,
         summary_br_code: Option<u16>,
@@ -804,7 +804,7 @@ impl FirmwareUI for UIEckhart {
             address_title,
             address_paragraph,
             summary_title,
-            summary_paragraphs,
+            summary_paragraphs, // << this
             summary_br_code,
             summary_br_name,
             extra_title,
