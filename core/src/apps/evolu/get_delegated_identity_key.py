@@ -50,12 +50,12 @@ async def confirm_thp(msg: EvoluGetDelegatedIdentityKey) -> None:
 
     if msg.thp_credential is None:
         raise ValueError("THP credentials must be provided when THP is enabled")
-    if msg.host_static_public_key is None:
+    credential_received = decode_credential(msg.thp_credential)
+    host_static_public_key = get_host_static_public_key()
+    if host_static_public_key is None:
         raise ValueError("Host static public key must be provided when THP is enabled")
 
-    credential_received = decode_credential(msg.thp_credential)
-
-    if not validate_credential(credential_received, msg.host_static_public_key):
+    if not validate_credential(credential_received, host_static_public_key):
         raise ValueError("Invalid credential")
 
     app_name = credential_received.cred_metadata.app_name
@@ -76,3 +76,8 @@ async def confirm_no_thp() -> None:
         TR.secure_sync__header,
         TR.secure_sync__delegated_identity_key_no_thp,
     )
+
+def get_host_static_public_key() -> bytes | None:
+    from trezor.wire import context
+    from storage.cache_common import CHANNEL_HOST_STATIC_PUBKEY
+    return context.cache_get(CHANNEL_HOST_STATIC_PUBKEY)

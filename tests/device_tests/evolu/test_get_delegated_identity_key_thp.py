@@ -61,7 +61,6 @@ def test_evolu_get_delegated_identity_is_constant(client: Client):
     response = session.call(
         EvoluGetDelegatedIdentityKey(
             thp_credential=credential_data.credential,
-            host_static_public_key=TEST_host_static_public_key,
         ),
         expect=EvoluDelegatedIdentityKey,
     )
@@ -72,7 +71,6 @@ def test_evolu_get_delegated_identity_is_constant(client: Client):
     response_2 = session.call(
         EvoluGetDelegatedIdentityKey(
             thp_credential=credential_data.credential,
-            host_static_public_key=TEST_host_static_public_key,
         ),
         expect=EvoluDelegatedIdentityKey,
     )
@@ -89,7 +87,6 @@ def test_evolu_get_delegated_identity_test_vector(client: Client):
     response = session.call(
         EvoluGetDelegatedIdentityKey(
             thp_credential=credential_data.credential,
-            host_static_public_key=TEST_host_static_public_key,
         ),
         expect=EvoluDelegatedIdentityKey,
     )
