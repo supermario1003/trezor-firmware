@@ -59,13 +59,14 @@ if utils.USE_THP:
     async def confirm_thp(msg: EvoluGetDelegatedIdentityKey) -> None:
         from trezor import TR
         from trezor.ui.layouts import confirm_action
+        from trezor.wire.context import get_channel_context
 
         from apps.thp.credential_manager import decode_credential, validate_credential
 
         if msg.thp_credential is None:
             raise ValueError("THP credentials must be provided when THP is enabled")
         credential_received = decode_credential(msg.thp_credential)
-        host_static_public_key = get_host_static_public_key()
+        host_static_public_key = get_channel_context().get_host_static_public_key()
 
         if not validate_credential(credential_received, host_static_public_key):
             raise ValueError("Invalid credential")
@@ -77,12 +78,3 @@ if utils.USE_THP:
             TR.secure_sync__header,
             TR.secure_sync__delegated_identity_key_thp.format(app_name, host_name),
         )
-
-    def get_host_static_public_key() -> bytes:
-        from trezor.wire import context
-        from trezor.wire.thp.session_context import GenericSessionContext
-
-        ctx = context.get_context()
-        if not isinstance(ctx, GenericSessionContext):
-            raise Exception("Invalid THP session context")
-        return ctx.channel.get_host_static_public_key()
