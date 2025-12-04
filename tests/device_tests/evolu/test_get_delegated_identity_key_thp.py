@@ -7,13 +7,20 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.messages import (
     EvoluDelegatedIdentityKey,
     EvoluGetDelegatedIdentityKey,
+    ThpCredentialRequest,
     ThpCredentialResponse,
+    ThpEndRequest,
+    ThpEndResponse,
 )
 from trezorlib.transport.thp import curve25519
 
+from ..thp.connect import prepare_protocol_for_pairing
+from ..thp.test_pairing import nfc_pairing
+
 pytestmark = [pytest.mark.protocol("protocol_v2"), pytest.mark.models("core")]
 
-TEST_host_static_private_key = curve25519.get_private_key(os.urandom(32))
+TEST_randomness = os.urandom(32)
+TEST_host_static_private_key = curve25519.get_private_key(TEST_randomness)
 TEST_host_static_public_key = curve25519.get_public_key(TEST_host_static_private_key)
 
 
@@ -24,17 +31,7 @@ class ThpPairingResult:
 
 
 def pair_and_get_credential(client: Client) -> ThpPairingResult:
-    from trezorlib.messages import (
-        ThpCredentialRequest,
-        ThpCredentialResponse,
-        ThpEndRequest,
-        ThpEndResponse,
-    )
-
-    from ..thp.connect import prepare_protocol_for_pairing
-    from ..thp.test_pairing import nfc_pairing
-
-    protocol = prepare_protocol_for_pairing(client)
+    protocol = prepare_protocol_for_pairing(client, TEST_randomness)
     nfc_pairing(client, protocol)
     protocol._send_message(
         ThpCredentialRequest(
