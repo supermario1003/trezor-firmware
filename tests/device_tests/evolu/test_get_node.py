@@ -73,7 +73,6 @@ def test_evolu_get_node_index_change(session: Session):
     assert node_index_0 != node_index_1
 
 
-
 def test_evolu_get_node_index_1(session: Session):
     proof = bytes.fromhex(
         "1fb521e8a4e4580377d530a9d6eb0a394ec8340fa42094d9f2e822bb944ce6a2074b81241b3b65dfa15d66e052f2504aba3ad1644844d695b181b3cdc9666cb66b"

@@ -38,7 +38,9 @@ class TestCheckEvoluCommands(unittest.TestCase):
                 h.get_digest(),
             )
 
-            self.assertTrue(check_delegated_identity_proof(proof,index, header, arguments))
+            self.assertTrue(
+                check_delegated_identity_proof(proof, index, header, arguments)
+            )
 
     def test_proof_sign_registration_request_invalid_size(self):
         from ubinascii import unhexlify
@@ -93,7 +95,9 @@ class TestCheckEvoluCommands(unittest.TestCase):
                 h.get_digest(),
             )
 
-            self.assertTrue(check_delegated_identity_proof(proof, index, header, arguments=[]))
+            self.assertTrue(
+                check_delegated_identity_proof(proof, index, header, arguments=[])
+            )
             self.assertTrue(check_delegated_identity_proof(proof, index, header))
 
 
