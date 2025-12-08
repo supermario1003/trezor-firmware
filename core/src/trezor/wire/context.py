@@ -125,7 +125,7 @@ if utils.USE_THP:
 
         ctx = get_context()
         if not isinstance(ctx, GenericSessionContext):
-            raise ValueError("Current context is not a THP channel context")
+            raise TypeError("Current context is not a THP channel context")
         return ctx.channel
 
 
