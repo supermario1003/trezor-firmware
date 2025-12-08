@@ -221,7 +221,7 @@ class Channel:
     def get_host_static_public_key(self) -> bytes:
         key = self.channel_cache.get(CHANNEL_HOST_STATIC_PUBKEY)
         if key is None:
-            raise Exception("Host static public key is not set in the channel cache.")
+            raise ValueError("Host static public key is not set in the channel cache.")
         return key
 
     def is_channel_to_replace(self) -> bool:
