@@ -118,6 +118,7 @@ def get_context() -> Context:
         raise NoWireContext
     return CURRENT_CONTEXT
 
+
 if utils.USE_THP:
 
     def get_channel_context() -> Channel:
