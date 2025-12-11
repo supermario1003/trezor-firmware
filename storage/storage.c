@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <sec/rng.h>
@@ -942,6 +943,7 @@ static void init_wiped_storage(void) {
     // set.
     return;
   }
+  fprintf(stderr, "TROPIC INIT  init_wiped_storage START\n");
 
   ensure(rng_fill_buffer_strong(cached_keys, sizeof(cached_keys)) ? sectrue
                                                                   : secfalse,
@@ -971,6 +973,7 @@ static void init_wiped_storage(void) {
 
 void storage_init(PIN_UI_WAIT_CALLBACK callback, const uint8_t *salt,
                   const uint16_t salt_len) {
+  fprintf(stderr, "TROPIC INIT  storage_init START\n");
   mpu_mode_t mpu_mode = mpu_reconfig(MPU_MODE_STORAGE);
 
   initialized = secfalse;
@@ -981,6 +984,7 @@ void storage_init(PIN_UI_WAIT_CALLBACK callback, const uint8_t *salt,
   ui_callback = callback;
 
   sha256_Raw(salt, salt_len, hardware_salt);
+  fprintf(stderr, "TROPIC INIT  storage_init AFTER SHA\n");
 
   if (norcow_active_version < NORCOW_VERSION) {
     if (sectrue != storage_upgrade()) {
@@ -988,13 +992,17 @@ void storage_init(PIN_UI_WAIT_CALLBACK callback, const uint8_t *salt,
       ensure(secfalse, "storage_upgrade failed");
     }
   }
+  fprintf(stderr, "TROPIC INIT  storage_init AFTER storage_upgrade\n");
 
   // If there is no EDEK, then generate a random DEK and SAK and store them.
   const void *val = NULL;
   uint16_t len = 0;
   if (secfalse == norcow_get(EDEK_PVC_KEY, &val, &len)) {
+    fprintf(stderr, "TROPIC INIT  storage_init AFTER EDEK get\n");
     init_wiped_storage();
+    fprintf(stderr, "TROPIC INIT  storage_init INIT WIPED STORAGE\n");
   }
+  fprintf(stderr, "TROPIC INIT  storage_init ALMOST END\n");
 
   mpu_restore(mpu_mode);
 }

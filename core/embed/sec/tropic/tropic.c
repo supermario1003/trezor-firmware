@@ -223,6 +223,7 @@ lt_ret_t tropic_session_invalidate(void) {
 
 lt_ret_t tropic_custom_session_start(lt_pkey_index_t pairing_key_index) {
   tropic_driver_t *drv = &g_tropic_driver;
+  fprintf(stderr, "TROPIC INIT  tropic_custom_session_start  START\n");
 
   if (!drv->initialized) {
     return LT_FAIL;
@@ -268,13 +269,16 @@ lt_ret_t tropic_custom_session_start(lt_pkey_index_t pairing_key_index) {
   }
 
   tropic_wait_for_ready();
+  fprintf(stderr, "TROPIC INIT AFTER tropic wait for ready\n");
 
   ret = TROPIC_RETRY_COMMAND(lt_session_start(&drv->handle, tropic_public,
                                               pairing_key_index, trezor_private,
                                               trezor_public));
+  fprintf(stderr, "TROPIC INIT   AFTER session start\n");
 
   drv->session_started = (ret == LT_OK);
   drv->pairing_key_index = pairing_key_index;
+  fprintf(stderr, "TROPIC INIT   END\n");
 
 cleanup:
   memzero(trezor_private, sizeof(trezor_private));
@@ -450,10 +454,12 @@ void tropic_get_factory_privkey(curve25519_key privkey) {
 
 bool tropic_random_buffer(void *buffer, size_t length) {
   tropic_driver_t *drv = &g_tropic_driver;
+  fprintf(stderr, "TROPIC INIT  tropic_random_buffer session start\n");
 
   if (!tropic_session_start()) {
     return false;
   }
+  fprintf(stderr, "TROPIC INIT  tropic_random_buffer lt call\n");
 
   if (LT_OK != lt_random_value_get(&drv->handle, buffer, length)) {
     return false;

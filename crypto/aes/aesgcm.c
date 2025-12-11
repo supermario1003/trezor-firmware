@@ -30,6 +30,7 @@ Issue Date: 30/03/2011
 */
 
 #include "aesgcm.h"
+#include <stdio.h>
 #include "mode_hdr.h"
 
 /*  This GCM implementation needs a Galois Field multiplier for GF(2^128).
@@ -480,8 +481,10 @@ ret_type gcm_compute_tag(                   /* compute authentication tag   */
 ret_type gcm_end(                           /* clean up and end operation   */
             gcm_ctx ctx[1])                 /* the mode context             */
 {
-    memset(ctx, 0, sizeof(gcm_ctx));
-    return RETURN_GOOD;
+  fprintf(stderr, "TROPIC INIT  gcm_end START\n");
+  memset(ctx, 0, sizeof(gcm_ctx));
+  fprintf(stderr, "TROPIC INIT  gcm_end END\n");
+  return RETURN_GOOD;
 }
 
 ret_type gcm_encrypt(                       /* encrypt & authenticate data  */

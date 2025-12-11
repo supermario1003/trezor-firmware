@@ -20,6 +20,7 @@
 #ifdef SECURE_MODE
 
 #include <sec/storage.h>
+#include <stdio.h>
 
 #include "memzero.h"
 #include "storage_salt.h"
@@ -27,7 +28,11 @@
 void storage_setup(PIN_UI_WAIT_CALLBACK callback) {
   storage_salt_t salt;
   storage_salt_get(&salt);
+  fprintf(stderr, "TROPIC INIT  storage_setup salt.bytes[30] %d \n",
+          salt.bytes[30]);
+  fprintf(stderr, "TROPIC INIT  storage_setup salt.size %ld \n", salt.size);
   storage_init(callback, salt.bytes, salt.size);
+  fprintf(stderr, "TROPIC INIT  storage_setup B\n");
   memzero(&salt, sizeof(salt));
 }
 

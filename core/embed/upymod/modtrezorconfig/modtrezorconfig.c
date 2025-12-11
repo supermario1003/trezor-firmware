@@ -56,12 +56,16 @@ static secbool wrapped_ui_wait_callback(uint32_t wait, uint32_t progress,
 ///     a new UI callback.
 ///     """
 STATIC mp_obj_t mod_trezorconfig_init(size_t n_args, const mp_obj_t *args) {
+  fprintf(stderr, "TROPIC INIT  mod_trezorconfig_init START\n");
   if (n_args > 0) {
+    fprintf(stderr, "TROPIC INIT  mod_trezorconfig_init A\n");
     MP_STATE_VM(trezorconfig_ui_wait_callback) = args[0];
     storage_setup(wrapped_ui_wait_callback);
   } else {
+    fprintf(stderr, "TROPIC INIT  mod_trezorconfig_init B\n");
     storage_setup(NULL);
   }
+  fprintf(stderr, "TROPIC INIT  mod_trezorconfig_init END\n");
   return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mod_trezorconfig_init_obj, 0, 1,

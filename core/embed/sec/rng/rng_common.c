@@ -35,6 +35,7 @@
 #include "rand.h"
 
 bool rng_fill_buffer_strong(void* buffer, size_t buffer_size) {
+  fprintf(stderr, "TROPIC INIT  rng_fill_buffer_strong START\n");
   rng_fill_buffer(buffer, buffer_size);
 
   uint8_t* dst = (uint8_t*)buffer;
@@ -54,6 +55,7 @@ bool rng_fill_buffer_strong(void* buffer, size_t buffer_size) {
     }
 #endif
 #ifdef USE_TROPIC
+    fprintf(stderr, "TROPIC INIT  rng_fill_buffer_strong USE TROPIC START\n");
     if (!tropic_random_buffer(block, block_size)) {
       return false;
     }
@@ -61,6 +63,7 @@ bool rng_fill_buffer_strong(void* buffer, size_t buffer_size) {
     for (size_t i = 0; i < block_size; i++) {
       dst[i] ^= block[i];
     }
+    fprintf(stderr, "TROPIC INIT  rng_fill_buffer_strong USE TROPIC END\n");
 #endif
     dst += block_size;
     remaining -= block_size;

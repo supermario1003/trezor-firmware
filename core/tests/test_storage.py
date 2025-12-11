@@ -8,7 +8,9 @@ from trezor import config, utils
 class TestConfig(unittest.TestCase):
 
     def setUp(self):
+        print("test_storage setUp START")
         config.init()
+        print("test_storage setUp AFTER INIT")
         config.wipe()
 
     def test_u2f_counter(self):
