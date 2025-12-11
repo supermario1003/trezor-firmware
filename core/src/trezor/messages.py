@@ -4172,7 +4172,9 @@ if TYPE_CHECKING:
     class EvoluGetDelegatedIdentityKey(protobuf.MessageType):
         thp_credential: "AnyBytes | None"
         host_static_public_key: "AnyBytes | None"
-        rotation_index: "int"
+        rotation_index: "int | None"
+        rotate: "bool | None"
+        index_management: "bool | None"
 
         def __init__(
             self,
@@ -4180,6 +4182,8 @@ if TYPE_CHECKING:
             thp_credential: "AnyBytes | None" = None,
             host_static_public_key: "AnyBytes | None" = None,
             rotation_index: "int | None" = None,
+            rotate: "bool | None" = None,
+            index_management: "bool | None" = None,
         ) -> None:
             pass
 
@@ -4189,11 +4193,13 @@ if TYPE_CHECKING:
 
     class EvoluDelegatedIdentityKey(protobuf.MessageType):
         private_key: "AnyBytes"
+        rotation_index: "int | None"
 
         def __init__(
             self,
             *,
             private_key: "AnyBytes",
+            rotation_index: "int | None" = None,
         ) -> None:
             pass
 

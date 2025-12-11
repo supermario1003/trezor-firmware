@@ -80,15 +80,23 @@ def sign_registration_request(
 
 @click.option("--credential", "-c", type=str)
 @click.option("--pubkey", "-p", type=str)
-@click.option("--rotation_index", "-i", type=int, default=0)
+@click.option("--rotation_index", "-i", type=int)
+@click.option("--rotate", is_flag=True, help="Rotate the delegated identity key.")
+@click.option(
+    "--index_management",
+    is_flag=True,
+    help="Do not return the key, only set the rotation index in storage.",
+)
 @cli.command()
 @with_session
 def get_delegated_identity_key(
     session: Session,
     credential: Optional[str] = None,
     pubkey: Optional[str] = None,
-    rotation_index: int = 0,
-) -> str:
+    rotation_index: Optional[int] = None,
+    rotate: Optional[bool] = None,
+    index_management: Optional[bool] = None,
+) -> dict[str, str | int | None]:
     """
     Request the delegated identity key of this device.
     This key is used to prove the identity of the device at the Quota Manager server and to prove
@@ -98,9 +106,16 @@ def get_delegated_identity_key(
     thp_credential = bytes.fromhex(credential) if credential else None
     host_static_public_key = bytes.fromhex(pubkey) if pubkey else None
 
-    return evolu.get_delegated_identity_key(
+    response = evolu.get_delegated_identity_key(
         session=session,
         rotation_index=rotation_index,
         thp_credential=thp_credential,
         host_static_public_key=host_static_public_key,
-    ).hex()
+        rotate=rotate,
+        index_management=index_management,
+    )
+
+    return {
+        "key": response.private_key.hex(),
+        "rotation_index": response.rotation_index,
+    }

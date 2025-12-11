@@ -867,6 +867,10 @@ pub struct EvoluGetDelegatedIdentityKey {
     pub host_static_public_key: ::std::option::Option<::std::vec::Vec<u8>>,
     // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.rotation_index)
     pub rotation_index: ::std::option::Option<u32>,
+    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.rotate)
+    pub rotate: ::std::option::Option<bool>,
+    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.index_management)
+    pub index_management: ::std::option::Option<bool>,
     // special fields
     // @@protoc_insertion_point(special_field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -958,7 +962,7 @@ impl EvoluGetDelegatedIdentityKey {
     // optional uint32 rotation_index = 3;
 
     pub fn rotation_index(&self) -> u32 {
-        self.rotation_index.unwrap_or(0u32)
+        self.rotation_index.unwrap_or(0)
     }
 
     pub fn clear_rotation_index(&mut self) {
@@ -974,8 +978,46 @@ impl EvoluGetDelegatedIdentityKey {
         self.rotation_index = ::std::option::Option::Some(v);
     }
 
+    // optional bool rotate = 4;
+
+    pub fn rotate(&self) -> bool {
+        self.rotate.unwrap_or(false)
+    }
+
+    pub fn clear_rotate(&mut self) {
+        self.rotate = ::std::option::Option::None;
+    }
+
+    pub fn has_rotate(&self) -> bool {
+        self.rotate.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_rotate(&mut self, v: bool) {
+        self.rotate = ::std::option::Option::Some(v);
+    }
+
+    // optional bool index_management = 5;
+
+    pub fn index_management(&self) -> bool {
+        self.index_management.unwrap_or(false)
+    }
+
+    pub fn clear_index_management(&mut self) {
+        self.index_management = ::std::option::Option::None;
+    }
+
+    pub fn has_index_management(&self) -> bool {
+        self.index_management.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_index_management(&mut self, v: bool) {
+        self.index_management = ::std::option::Option::Some(v);
+    }
+
     fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(3);
+        let mut fields = ::std::vec::Vec::with_capacity(5);
         let mut oneofs = ::std::vec::Vec::with_capacity(0);
         fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
             "thp_credential",
@@ -991,6 +1033,16 @@ impl EvoluGetDelegatedIdentityKey {
             "rotation_index",
             |m: &EvoluGetDelegatedIdentityKey| { &m.rotation_index },
             |m: &mut EvoluGetDelegatedIdentityKey| { &mut m.rotation_index },
+        ));
+        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
+            "rotate",
+            |m: &EvoluGetDelegatedIdentityKey| { &m.rotate },
+            |m: &mut EvoluGetDelegatedIdentityKey| { &mut m.rotate },
+        ));
+        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
+            "index_management",
+            |m: &EvoluGetDelegatedIdentityKey| { &m.index_management },
+            |m: &mut EvoluGetDelegatedIdentityKey| { &mut m.index_management },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EvoluGetDelegatedIdentityKey>(
             "EvoluGetDelegatedIdentityKey",
@@ -1019,6 +1071,12 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
                 24 => {
                     self.rotation_index = ::std::option::Option::Some(is.read_uint32()?);
                 },
+                32 => {
+                    self.rotate = ::std::option::Option::Some(is.read_bool()?);
+                },
+                40 => {
+                    self.index_management = ::std::option::Option::Some(is.read_bool()?);
+                },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
                 },
@@ -1040,6 +1098,12 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
         if let Some(v) = self.rotation_index {
             my_size += ::protobuf::rt::uint32_size(3, v);
         }
+        if let Some(v) = self.rotate {
+            my_size += 1 + 1;
+        }
+        if let Some(v) = self.index_management {
+            my_size += 1 + 1;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
         my_size
@@ -1054,6 +1118,12 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
         }
         if let Some(v) = self.rotation_index {
             os.write_uint32(3, v)?;
+        }
+        if let Some(v) = self.rotate {
+            os.write_bool(4, v)?;
+        }
+        if let Some(v) = self.index_management {
+            os.write_bool(5, v)?;
         }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -1075,6 +1145,8 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
         self.thp_credential = ::std::option::Option::None;
         self.host_static_public_key = ::std::option::Option::None;
         self.rotation_index = ::std::option::Option::None;
+        self.rotate = ::std::option::Option::None;
+        self.index_management = ::std::option::Option::None;
         self.special_fields.clear();
     }
 
@@ -1083,6 +1155,8 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
             thp_credential: ::std::option::Option::None,
             host_static_public_key: ::std::option::Option::None,
             rotation_index: ::std::option::Option::None,
+            rotate: ::std::option::Option::None,
+            index_management: ::std::option::Option::None,
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -1112,6 +1186,8 @@ pub struct EvoluDelegatedIdentityKey {
     // message fields
     // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluDelegatedIdentityKey.private_key)
     pub private_key: ::std::option::Option<::std::vec::Vec<u8>>,
+    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluDelegatedIdentityKey.rotation_index)
+    pub rotation_index: ::std::option::Option<u32>,
     // special fields
     // @@protoc_insertion_point(special_field:hw.trezor.messages.evolu.EvoluDelegatedIdentityKey.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -1164,13 +1240,37 @@ impl EvoluDelegatedIdentityKey {
         self.private_key.take().unwrap_or_else(|| ::std::vec::Vec::new())
     }
 
+    // optional uint32 rotation_index = 2;
+
+    pub fn rotation_index(&self) -> u32 {
+        self.rotation_index.unwrap_or(0)
+    }
+
+    pub fn clear_rotation_index(&mut self) {
+        self.rotation_index = ::std::option::Option::None;
+    }
+
+    pub fn has_rotation_index(&self) -> bool {
+        self.rotation_index.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_rotation_index(&mut self, v: u32) {
+        self.rotation_index = ::std::option::Option::Some(v);
+    }
+
     fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(1);
+        let mut fields = ::std::vec::Vec::with_capacity(2);
         let mut oneofs = ::std::vec::Vec::with_capacity(0);
         fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
             "private_key",
             |m: &EvoluDelegatedIdentityKey| { &m.private_key },
             |m: &mut EvoluDelegatedIdentityKey| { &mut m.private_key },
+        ));
+        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
+            "rotation_index",
+            |m: &EvoluDelegatedIdentityKey| { &m.rotation_index },
+            |m: &mut EvoluDelegatedIdentityKey| { &mut m.rotation_index },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EvoluDelegatedIdentityKey>(
             "EvoluDelegatedIdentityKey",
@@ -1196,6 +1296,9 @@ impl ::protobuf::Message for EvoluDelegatedIdentityKey {
                 10 => {
                     self.private_key = ::std::option::Option::Some(is.read_bytes()?);
                 },
+                16 => {
+                    self.rotation_index = ::std::option::Option::Some(is.read_uint32()?);
+                },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
                 },
@@ -1211,6 +1314,9 @@ impl ::protobuf::Message for EvoluDelegatedIdentityKey {
         if let Some(v) = self.private_key.as_ref() {
             my_size += ::protobuf::rt::bytes_size(1, &v);
         }
+        if let Some(v) = self.rotation_index {
+            my_size += ::protobuf::rt::uint32_size(2, v);
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
         my_size
@@ -1219,6 +1325,9 @@ impl ::protobuf::Message for EvoluDelegatedIdentityKey {
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::Result<()> {
         if let Some(v) = self.private_key.as_ref() {
             os.write_bytes(1, v)?;
+        }
+        if let Some(v) = self.rotation_index {
+            os.write_uint32(2, v)?;
         }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -1238,12 +1347,14 @@ impl ::protobuf::Message for EvoluDelegatedIdentityKey {
 
     fn clear(&mut self) {
         self.private_key = ::std::option::Option::None;
+        self.rotation_index = ::std::option::Option::None;
         self.special_fields.clear();
     }
 
     fn default_instance() -> &'static EvoluDelegatedIdentityKey {
         static instance: EvoluDelegatedIdentityKey = EvoluDelegatedIdentityKey {
             private_key: ::std::option::Option::None,
+            rotation_index: ::std::option::Option::None,
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -1280,12 +1391,15 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     ted_identity\x18\x03\x20\x02(\x0cR\x18proofOfDelegatedIdentity\"e\n\x18E\
     voluRegistrationRequest\x12+\n\x11certificate_chain\x18\x01\x20\x03(\x0c\
     R\x10certificateChain\x12\x1c\n\tsignature\x18\x02\x20\x02(\x0cR\tsignat\
-    ure\"\xa4\x01\n\x1cEvoluGetDelegatedIdentityKey\x12%\n\x0ethp_credential\
+    ure\"\xe4\x01\n\x1cEvoluGetDelegatedIdentityKey\x12%\n\x0ethp_credential\
     \x18\x01\x20\x01(\x0cR\rthpCredential\x123\n\x16host_static_public_key\
-    \x18\x02\x20\x01(\x0cR\x13hostStaticPublicKey\x12(\n\x0erotation_index\
-    \x18\x03\x20\x01(\r:\x010R\rrotationIndex\"<\n\x19EvoluDelegatedIdentity\
-    Key\x12\x1f\n\x0bprivate_key\x18\x01\x20\x02(\x0cR\nprivateKeyB=\n#com.s\
-    atoshilabs.trezor.lib.protobufB\x12TrezorMessageEvolu\x80\xa6\x1d\x01\
+    \x18\x02\x20\x01(\x0cR\x13hostStaticPublicKey\x12%\n\x0erotation_index\
+    \x18\x03\x20\x01(\rR\rrotationIndex\x12\x16\n\x06rotate\x18\x04\x20\x01(\
+    \x08R\x06rotate\x12)\n\x10index_management\x18\x05\x20\x01(\x08R\x0finde\
+    xManagement\"c\n\x19EvoluDelegatedIdentityKey\x12\x1f\n\x0bprivate_key\
+    \x18\x01\x20\x02(\x0cR\nprivateKey\x12%\n\x0erotation_index\x18\x02\x20\
+    \x01(\rR\rrotationIndexB=\n#com.satoshilabs.trezor.lib.protobufB\x12Trez\
+    orMessageEvolu\x80\xa6\x1d\x01\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file
