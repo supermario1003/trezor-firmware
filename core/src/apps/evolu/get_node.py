@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from trezor.messages import EvoluGetNode, EvoluNode
 
-_EVOLU_KEY_PATH_PREFIX = [b"TREZOR", b"Evolu Index"]
+_EVOLU_KEY_PATH_PREFIX = [b"TREZOR", b"Evolu"]
+_EVOLU_KEY_PATH_PREFIX_INDEX = [b"TREZOR", b"Evolu Index"]
 
 
 async def get_node(msg: EvoluGetNode) -> EvoluNode:
@@ -48,6 +49,9 @@ async def derive_evolu_node(index: int) -> bytes:
 
     seed = await get_seed()
     node = Slip21Node(seed)
-    node.derive_path(_EVOLU_KEY_PATH_PREFIX + [str(index).encode()])
+    if index == 0:
+        node.derive_path(_EVOLU_KEY_PATH_PREFIX)
+    else:
+        node.derive_path(_EVOLU_KEY_PATH_PREFIX_INDEX + [str(index).encode()])
 
     return node.data
