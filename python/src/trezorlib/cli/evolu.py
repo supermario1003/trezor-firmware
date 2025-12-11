@@ -34,14 +34,12 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("proof", type=str)
-@click.option("--node_index", "-n", type=int, default=0)
-@click.option("--delegated_identity_rotation_index", "-d", type=int, default=0)
+@click.option("--node_index", "-i", type=int, default=0)
 @with_session
 def get_node(
     session: Session,
     proof: str,
     node_index: int,
-    delegated_identity_rotation_index: int,
 ) -> str:
     """Return the SLIP-21 node for Evolu."""
     proof_bytes = bytes.fromhex(proof)
@@ -49,7 +47,6 @@ def get_node(
         session,
         proof=proof_bytes,
         node_rotation_index=node_index,
-        delegated_identity_rotation_index=delegated_identity_rotation_index,
     ).hex()
 
 

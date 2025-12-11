@@ -28,13 +28,11 @@ def get_node(
     session: Session,
     proof: bytes,
     node_rotation_index: int,
-    delegated_identity_rotation_index: int,
 ) -> bytes:
     return session.call(
         messages.EvoluGetNode(
             proof_of_delegated_identity=proof,
             node_rotation_index=node_rotation_index,
-            delegated_identity_rotation_index=delegated_identity_rotation_index,
         ),
         expect=messages.EvoluNode,
     ).data

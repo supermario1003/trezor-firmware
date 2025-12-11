@@ -5562,7 +5562,6 @@ class EvoluGetNode(protobuf.MessageType):
     FIELDS = {
         1: protobuf.Field("proof_of_delegated_identity", "bytes", repeated=False, required=True),
         2: protobuf.Field("node_rotation_index", "uint32", repeated=False, required=False, default=0),
-        3: protobuf.Field("delegated_identity_rotation_index", "uint32", repeated=False, required=False, default=0),
     }
 
     def __init__(
@@ -5570,11 +5569,9 @@ class EvoluGetNode(protobuf.MessageType):
         *,
         proof_of_delegated_identity: "bytes",
         node_rotation_index: Optional["int"] = 0,
-        delegated_identity_rotation_index: Optional["int"] = 0,
     ) -> None:
         self.proof_of_delegated_identity = proof_of_delegated_identity
         self.node_rotation_index = node_rotation_index
-        self.delegated_identity_rotation_index = delegated_identity_rotation_index
 
 
 class EvoluNode(protobuf.MessageType):

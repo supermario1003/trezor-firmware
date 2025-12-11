@@ -28,13 +28,19 @@ async def get_node(msg: EvoluGetNode) -> EvoluNode:
     from trezor.wire import NotInitialized
 
     from .common import check_delegated_identity_proof
+    from storage.device import get_delegated_identity_key_rotation_index
 
     if not is_initialized():
         raise NotInitialized("Device is not initialized")
 
+    delegated_identity_key_rotation_index = get_delegated_identity_key_rotation_index()
+    if delegated_identity_key_rotation_index is None:
+        delegated_identity_key_rotation_index = 0
+
+
     if not check_delegated_identity_proof(
         bytes(msg.proof_of_delegated_identity),
-        msg.delegated_identity_rotation_index,
+        delegated_identity_key_rotation_index,
         header=b"EvoluGetNode",
     ):
         raise ValueError("Invalid proof")

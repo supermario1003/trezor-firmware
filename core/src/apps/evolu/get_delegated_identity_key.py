@@ -40,17 +40,18 @@ async def get_delegated_identity_key(
     if msg.rotate:
         from trezor import TR
 
+        rotation_index = get_rotation_index(msg)
+        if rotation_index is None:
+            raise ValueError(
+                "Cannot rotate delegated identity key without a stored rotation index."
+            )
+
         await confirm_action(
             "secure_sync",
             TR.suite_sync__header,
             TR.suite_sync__rotate_key,
         )
 
-        rotation_index = get_rotation_index(msg)
-        if rotation_index is None:
-            raise ValueError(
-                "Cannot rotate delegated identity key without a stored rotation index."
-            )
         set_rotation_index(rotation_index + 1)
     else:
         if utils.USE_THP:

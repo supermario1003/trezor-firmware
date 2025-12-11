@@ -32,8 +32,6 @@ pub struct EvoluGetNode {
     pub proof_of_delegated_identity: ::std::option::Option<::std::vec::Vec<u8>>,
     // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetNode.node_rotation_index)
     pub node_rotation_index: ::std::option::Option<u32>,
-    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetNode.delegated_identity_rotation_index)
-    pub delegated_identity_rotation_index: ::std::option::Option<u32>,
     // special fields
     // @@protoc_insertion_point(special_field:hw.trezor.messages.evolu.EvoluGetNode.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -105,27 +103,8 @@ impl EvoluGetNode {
         self.node_rotation_index = ::std::option::Option::Some(v);
     }
 
-    // optional uint32 delegated_identity_rotation_index = 3;
-
-    pub fn delegated_identity_rotation_index(&self) -> u32 {
-        self.delegated_identity_rotation_index.unwrap_or(0u32)
-    }
-
-    pub fn clear_delegated_identity_rotation_index(&mut self) {
-        self.delegated_identity_rotation_index = ::std::option::Option::None;
-    }
-
-    pub fn has_delegated_identity_rotation_index(&self) -> bool {
-        self.delegated_identity_rotation_index.is_some()
-    }
-
-    // Param is passed by value, moved
-    pub fn set_delegated_identity_rotation_index(&mut self, v: u32) {
-        self.delegated_identity_rotation_index = ::std::option::Option::Some(v);
-    }
-
     fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(3);
+        let mut fields = ::std::vec::Vec::with_capacity(2);
         let mut oneofs = ::std::vec::Vec::with_capacity(0);
         fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
             "proof_of_delegated_identity",
@@ -136,11 +115,6 @@ impl EvoluGetNode {
             "node_rotation_index",
             |m: &EvoluGetNode| { &m.node_rotation_index },
             |m: &mut EvoluGetNode| { &mut m.node_rotation_index },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
-            "delegated_identity_rotation_index",
-            |m: &EvoluGetNode| { &m.delegated_identity_rotation_index },
-            |m: &mut EvoluGetNode| { &mut m.delegated_identity_rotation_index },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EvoluGetNode>(
             "EvoluGetNode",
@@ -169,9 +143,6 @@ impl ::protobuf::Message for EvoluGetNode {
                 16 => {
                     self.node_rotation_index = ::std::option::Option::Some(is.read_uint32()?);
                 },
-                24 => {
-                    self.delegated_identity_rotation_index = ::std::option::Option::Some(is.read_uint32()?);
-                },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
                 },
@@ -190,9 +161,6 @@ impl ::protobuf::Message for EvoluGetNode {
         if let Some(v) = self.node_rotation_index {
             my_size += ::protobuf::rt::uint32_size(2, v);
         }
-        if let Some(v) = self.delegated_identity_rotation_index {
-            my_size += ::protobuf::rt::uint32_size(3, v);
-        }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
         my_size
@@ -204,9 +172,6 @@ impl ::protobuf::Message for EvoluGetNode {
         }
         if let Some(v) = self.node_rotation_index {
             os.write_uint32(2, v)?;
-        }
-        if let Some(v) = self.delegated_identity_rotation_index {
-            os.write_uint32(3, v)?;
         }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -227,7 +192,6 @@ impl ::protobuf::Message for EvoluGetNode {
     fn clear(&mut self) {
         self.proof_of_delegated_identity = ::std::option::Option::None;
         self.node_rotation_index = ::std::option::Option::None;
-        self.delegated_identity_rotation_index = ::std::option::Option::None;
         self.special_fields.clear();
     }
 
@@ -235,7 +199,6 @@ impl ::protobuf::Message for EvoluGetNode {
         static instance: EvoluGetNode = EvoluGetNode {
             proof_of_delegated_identity: ::std::option::Option::None,
             node_rotation_index: ::std::option::Option::None,
-            delegated_identity_rotation_index: ::std::option::Option::None,
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -1380,26 +1343,24 @@ impl ::protobuf::reflect::ProtobufValue for EvoluDelegatedIdentityKey {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n\x14messages-evolu.proto\x12\x18hw.trezor.messages.evolu\x1a\roptions.\
-    proto\"\xce\x01\n\x0cEvoluGetNode\x12=\n\x1bproof_of_delegated_identity\
+    proto\"\x80\x01\n\x0cEvoluGetNode\x12=\n\x1bproof_of_delegated_identity\
     \x18\x01\x20\x02(\x0cR\x18proofOfDelegatedIdentity\x121\n\x13node_rotati\
-    on_index\x18\x02\x20\x01(\r:\x010R\x11nodeRotationIndex\x12L\n!delegated\
-    _identity_rotation_index\x18\x03\x20\x01(\r:\x010R\x1edelegatedIdentityR\
-    otationIndex\"\x1f\n\tEvoluNode\x12\x12\n\x04data\x18\x01\x20\x02(\x0cR\
-    \x04data\"\xb9\x01\n\x1cEvoluSignRegistrationRequest\x122\n\x15challenge\
-    _from_server\x18\x01\x20\x02(\x0cR\x13challengeFromServer\x12&\n\x0fsize\
-    _to_acquire\x18\x02\x20\x02(\rR\rsizeToAcquire\x12=\n\x1bproof_of_delega\
-    ted_identity\x18\x03\x20\x02(\x0cR\x18proofOfDelegatedIdentity\"e\n\x18E\
-    voluRegistrationRequest\x12+\n\x11certificate_chain\x18\x01\x20\x03(\x0c\
-    R\x10certificateChain\x12\x1c\n\tsignature\x18\x02\x20\x02(\x0cR\tsignat\
-    ure\"\xe4\x01\n\x1cEvoluGetDelegatedIdentityKey\x12%\n\x0ethp_credential\
-    \x18\x01\x20\x01(\x0cR\rthpCredential\x123\n\x16host_static_public_key\
-    \x18\x02\x20\x01(\x0cR\x13hostStaticPublicKey\x12%\n\x0erotation_index\
-    \x18\x03\x20\x01(\rR\rrotationIndex\x12\x16\n\x06rotate\x18\x04\x20\x01(\
-    \x08R\x06rotate\x12)\n\x10index_management\x18\x05\x20\x01(\x08R\x0finde\
-    xManagement\"c\n\x19EvoluDelegatedIdentityKey\x12\x1f\n\x0bprivate_key\
-    \x18\x01\x20\x02(\x0cR\nprivateKey\x12%\n\x0erotation_index\x18\x02\x20\
-    \x01(\rR\rrotationIndexB=\n#com.satoshilabs.trezor.lib.protobufB\x12Trez\
-    orMessageEvolu\x80\xa6\x1d\x01\
+    on_index\x18\x02\x20\x01(\r:\x010R\x11nodeRotationIndex\"\x1f\n\tEvoluNo\
+    de\x12\x12\n\x04data\x18\x01\x20\x02(\x0cR\x04data\"\xb9\x01\n\x1cEvoluS\
+    ignRegistrationRequest\x122\n\x15challenge_from_server\x18\x01\x20\x02(\
+    \x0cR\x13challengeFromServer\x12&\n\x0fsize_to_acquire\x18\x02\x20\x02(\
+    \rR\rsizeToAcquire\x12=\n\x1bproof_of_delegated_identity\x18\x03\x20\x02\
+    (\x0cR\x18proofOfDelegatedIdentity\"e\n\x18EvoluRegistrationRequest\x12+\
+    \n\x11certificate_chain\x18\x01\x20\x03(\x0cR\x10certificateChain\x12\
+    \x1c\n\tsignature\x18\x02\x20\x02(\x0cR\tsignature\"\xe4\x01\n\x1cEvoluG\
+    etDelegatedIdentityKey\x12%\n\x0ethp_credential\x18\x01\x20\x01(\x0cR\rt\
+    hpCredential\x123\n\x16host_static_public_key\x18\x02\x20\x01(\x0cR\x13h\
+    ostStaticPublicKey\x12%\n\x0erotation_index\x18\x03\x20\x01(\rR\rrotatio\
+    nIndex\x12\x16\n\x06rotate\x18\x04\x20\x01(\x08R\x06rotate\x12)\n\x10ind\
+    ex_management\x18\x05\x20\x01(\x08R\x0findexManagement\"c\n\x19EvoluDele\
+    gatedIdentityKey\x12\x1f\n\x0bprivate_key\x18\x01\x20\x02(\x0cR\nprivate\
+    Key\x12%\n\x0erotation_index\x18\x02\x20\x01(\rR\rrotationIndexB=\n#com.\
+    satoshilabs.trezor.lib.protobufB\x12TrezorMessageEvolu\x80\xa6\x1d\x01\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file
