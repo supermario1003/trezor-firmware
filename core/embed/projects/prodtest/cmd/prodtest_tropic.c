@@ -1638,8 +1638,8 @@ static void prodtest_tropic_stress_test(cli_t* cli) {
   }
 
   // Test `lt_mac_and_destroy`
-  for (int slot_index = TROPIC_UNPRIVILEGED_PAIRING_KEY_SLOT;
-       slot_index < TROPIC_UNPRIVILEGED_PAIRING_KEY_SLOT +
+  for (int slot_index = TROPIC_FIRST_MAC_AND_DESTROY_SLOT_UNPRIVILEGED;
+       slot_index < TROPIC_FIRST_MAC_AND_DESTROY_SLOT_UNPRIVILEGED +
                         TROPIC_MAC_AND_DESTROY_SLOTS_COUNT;
        slot_index++) {
     for (int i = 0; i < 3; i++) {
