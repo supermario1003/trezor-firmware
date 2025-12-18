@@ -16,6 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#pragma GCC optimize("O0")
+
 #ifdef KERNEL_MODE
 #include <trezor_bsp.h>
 #include <trezor_model.h>
@@ -183,6 +186,15 @@ uint32_t display_fb_init(void) {
 
   g_display_driver.active_frame = 0;
 
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  GPIO_InitTypeDef GPIO_InitStructure = {0};
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStructure.Pull = GPIO_NOPULL;
+  GPIO_InitStructure.Speed = GPIO_SPEED_LOW;
+  GPIO_InitStructure.Pin = GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
   return (uint32_t)get_fb_ptr(0);
 }
 
@@ -206,6 +218,8 @@ void HAL_LTDC_LineEvenCallback(LTDC_HandleTypeDef *hltdc) {
   }
 
   HAL_LTDC_ProgramLineEvent(&drv->hlcd_ltdc, LCD_HEIGHT);
+
+  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 }
 
 #endif
