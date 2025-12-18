@@ -74,6 +74,9 @@ void display_deinit(display_content_mode_t mode);
 // perspective of the GTZC (Global TrustZone Controller).
 void display_set_unpriv_access(bool unpriv);
 
+
+void display_refresh_rate_set(uint32_t new_vfp);
+
 #endif  // KERNEL_MODE
 
 // Sets display backlight level ranging from 0 (off)..255 (maximum).

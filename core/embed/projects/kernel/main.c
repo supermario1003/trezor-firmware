@@ -195,6 +195,8 @@ void drivers_init() {
 //
 // Returns when the coreapp task is terminated
 static void kernel_loop(applet_t *coreapp) {
+  uint32_t time = 0;
+
 #if SECURE_MODE && USE_STORAGE_HWKEY
   secure_aes_set_applet(coreapp);
 #endif
@@ -211,6 +213,20 @@ static void kernel_loop(applet_t *coreapp) {
 
     if (signalled.read_ready & (1 << SYSHANDLE_SYSCALL)) {
       syscall_ipc_dequeue();
+    }
+
+    if (ticks() >= time) {
+      static const uint32_t refresh_rates[] = {
+        2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 128 /*50Hz*/, 16 /*60Hz*/ };
+      static int idx = 5;
+
+      time = ticks_timeout(10000);
+      (void)time;
+
+      display_refresh_rate_set(refresh_rates[idx]);
+      (void)refresh_rates;
+
+      idx = idx > 0 ? idx - 1 : 5;
     }
 
   } while (applet_is_alive(coreapp));

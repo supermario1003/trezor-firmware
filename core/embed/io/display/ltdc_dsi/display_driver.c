@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma GCC optimize("O0")
+
 #include <trezor_bsp.h>
 #include <trezor_model.h>
 #include <trezor_rtl.h>
@@ -54,12 +56,11 @@ static bool display_pll_init(void) {
     ;
 
 #if HSE_VALUE == 32000000
-
-  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 8,
-                        ((DSI_LANE_BYTE_FREQ_HZ * 8) / 4000000), 8, 8, 24);
+  // (((32 MHz / 8) * 125) / 27) = ~60 Hz
+  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 8, 125, 8, 8, 27); 
 #elif HSE_VALUE == 16000000
-  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 4,
-                        ((DSI_LANE_BYTE_FREQ_HZ * 8) / 4000000), 8, 8, 24);
+  // (((16 MHz / 4) * 125) / 27) = ~60 Hz
+  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 4, 125, 8, 8, 27);
 #endif
 
   __HAL_RCC_PLL3_VCIRANGE(RCC_PLLVCIRANGE_0);
@@ -131,16 +132,24 @@ static bool display_dsi_init(display_driver_t *drv) {
 
   /* DSI initialization */
   drv->hlcd_dsi.Instance = DSI;
-  drv->hlcd_dsi.Init.AutomaticClockLaneControl = DSI_AUTO_CLK_LANE_CTRL_DISABLE;
-  /* We have 1 data lane at 500Mbps => lane byte clock at 500/8 = 62,5 MHZ */
+  drv->hlcd_dsi.Init.AutomaticClockLaneControl = DSI_AUTO_CLK_LANE_CTRL_DISABLE; // Erratum "DSI automatic clock lane control not functional"
+  /* We have 2 data lanes at 496Mbps => lane byte clock at 496/8 = 62 MHZ */
   /* We want TX escape clock at around 20MHz and under 20MHz so clock division
    * is set to 4 */
-  drv->hlcd_dsi.Init.TXEscapeCkdiv = 4;
+  drv->hlcd_dsi.Init.TXEscapeCkdiv = 4; // ~15.5 MHz => ~7.75 Mbps (in LP)
   drv->hlcd_dsi.Init.NumberOfLanes = PANEL_DSI_LANES;
   drv->hlcd_dsi.Init.PHYFrequencyRange = DSI_DPHY_FRANGE_450MHZ_510MHZ;
-  drv->hlcd_dsi.Init.PHYLowPowerOffset = 0;
+  drv->hlcd_dsi.Init.PHYLowPowerOffset = 0; // LPXO - no offset
 
-  PLLInit.PLLNDIV = ((DSI_LANE_BYTE_FREQ_HZ * 8 * 2 * 4) / (2 * HSE_VALUE));
+#if HSE_VALUE == 32000000
+  // Output lane byte clock = 62 MHz, PHY clock = 496 MHz
+  // (((32 MHz / 4) * 62) / 8) = 62 MHz
+  PLLInit.PLLNDIV = 62;
+#elif HSE_VALUE == 16000000
+  // Output lane byte clock = 62 MHz, PHY clock = 496 MHz
+  // (((16 MHz / 4) * 124) / 8) = 62 MHz
+  PLLInit.PLLNDIV = 124;
+#endif
   PLLInit.PLLIDF = 4;
   PLLInit.PLLODF = 2;
   PLLInit.PLLVCORange = DSI_DPHY_VCO_FRANGE_800MHZ_1GHZ;
@@ -161,11 +170,14 @@ static bool display_dsi_init(display_driver_t *drv) {
   drv->DSIVidCfg.DEPolarity = DSI_DATA_ENABLE_ACTIVE_HIGH;
   drv->DSIVidCfg.ColorCoding = DSI_RGB888;
   drv->DSIVidCfg.Mode = PANEL_DSI_MODE;
-  drv->DSIVidCfg.PacketSize = LCD_WIDTH;
-  drv->DSIVidCfg.NullPacketSize = 0xFFFU;
-  drv->DSIVidCfg.HorizontalSyncActive = HSYNC * 3;
-  drv->DSIVidCfg.HorizontalBackPorch = HBP * 3;
-  drv->DSIVidCfg.HorizontalLine = (HACT + HSYNC + HBP + HFP) * 3;
+  drv->DSIVidCfg.PacketSize = LCD_WIDTH; // In burst mode, the packet size must
+                                         // be great or equal to the visible
+                                         // width
+  drv->DSIVidCfg.NumberOfChunks = 0; // No chunks in burst mode
+  drv->DSIVidCfg.NullPacketSize = 0; // No null packet in burst mode
+  drv->DSIVidCfg.HorizontalSyncActive = HSYNC * 3; // TODO: '3' means: bytes per pixel
+  drv->DSIVidCfg.HorizontalBackPorch = HBP * 3; // TODO: '3' means: bytes per pixel
+  drv->DSIVidCfg.HorizontalLine = (HACT + HSYNC + HBP + HFP) * 3; // TODO: '3' means: bytes per pixel
   drv->DSIVidCfg.VerticalSyncActive = VSYNC;
   drv->DSIVidCfg.VerticalBackPorch = VBP;
   drv->DSIVidCfg.VerticalFrontPorch = VFP;
@@ -192,6 +204,7 @@ static bool display_dsi_init(display_driver_t *drv) {
   /*********************/
   /* LCD configuration */
   /*********************/
+  // RM0456 Table 445. HS2LP and LP2HS values vs. band frequency (MHz)
   PhyTimers.ClockLaneHS2LPTime = 11;
   PhyTimers.ClockLaneLP2HSTime = 40;
   PhyTimers.DataLaneHS2LPTime = 12;
@@ -260,7 +273,7 @@ static bool display_ltdc_config_layer(LTDC_HandleTypeDef *hltdc,
   LayerCfg.ImageHeight = LCD_HEIGHT;
   LayerCfg.Backcolor.Red = 0;   /* Not Used: default value */
   LayerCfg.Backcolor.Green = 0; /* Not Used: default value */
-  LayerCfg.Backcolor.Blue = 0;  /* Not Used: default value */
+  LayerCfg.Backcolor.Blue = 0xFF; // TEST /* Not Used: default value */
   LayerCfg.Backcolor.Reserved = 0xFF;
   return HAL_LTDC_ConfigLayer(hltdc, &LayerCfg, LTDC_LAYER_1) == HAL_OK;
 }
@@ -287,7 +300,7 @@ static bool display_ltdc_init(display_driver_t *drv, uint32_t fb_addr) {
   drv->hlcd_ltdc.Init.AccumulatedHBP = HSYNC + HBP - 1;
   drv->hlcd_ltdc.Init.AccumulatedActiveW = HACT + HBP + HSYNC - 1;
   drv->hlcd_ltdc.Init.TotalWidth = HACT + HBP + HFP + HSYNC - 1;
-  drv->hlcd_ltdc.Init.Backcolor.Red = 0;   /* Not used default value */
+  drv->hlcd_ltdc.Init.Backcolor.Red = 0xFF; // TEST  /* Not used default value */
   drv->hlcd_ltdc.Init.Backcolor.Green = 0; /* Not used default value */
   drv->hlcd_ltdc.Init.Backcolor.Blue = 0;  /* Not used default value */
   drv->hlcd_ltdc.Init.Backcolor.Reserved = 0xFF;
@@ -440,6 +453,43 @@ void display_deinit(display_content_mode_t mode) {
 #endif
 
   memset(drv, 0, sizeof(display_driver_t));
+}
+
+void display_refresh_rate_set(uint32_t new_vfp) {
+  display_driver_t *drv = &g_display_driver;
+  irq_key_t key;
+
+  if (!drv->initialized) {
+    return;
+  }
+
+  key = irq_lock();
+
+  while ((drv->hlcd_ltdc.Instance->CDSR & LTDC_CDSR_VSYNCS_Msk) != 0)
+    continue;
+
+  while ((drv->hlcd_ltdc.Instance->CDSR & LTDC_CDSR_VSYNCS_Msk) == 0)
+    continue;
+
+  drv->hlcd_ltdc.Instance->GCR &= ~LTDC_GCR_LTDCEN;
+  drv->hlcd_dsi.Instance->CR &= ~DSI_CR_EN;
+
+  drv->DSIVidCfg.VerticalFrontPorch = new_vfp;
+  drv->hlcd_ltdc.Init.TotalHeigh = drv->hlcd_ltdc.Init.AccumulatedActiveH +
+                                   drv->DSIVidCfg.VerticalFrontPorch;
+
+  /* Set the Vertical Front Porch (VFP)*/
+  drv->hlcd_dsi.Instance->VVFPCR &= ~(DSI_VVFPCR_VFP);
+  drv->hlcd_dsi.Instance->VVFPCR |= drv->DSIVidCfg.VerticalFrontPorch;  
+
+  /* Set Total Height */
+  drv->hlcd_ltdc.Instance->TWCR &= ~0xFFFF/*~(LTDC_TWCR_TOTALH)*/;
+  drv->hlcd_ltdc.Instance->TWCR |= drv->hlcd_ltdc.Init.TotalHeigh;
+
+  drv->hlcd_dsi.Instance->CR |= DSI_CR_EN;
+  drv->hlcd_ltdc.Instance->GCR |= LTDC_GCR_LTDCEN;
+
+  irq_unlock(key);
 }
 
 bool display_set_backlight(uint8_t level) {

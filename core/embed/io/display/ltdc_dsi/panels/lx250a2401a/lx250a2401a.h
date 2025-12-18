@@ -21,21 +21,21 @@
 
 #include <trezor_types.h>
 
-#define DSI_LANE_BYTE_FREQ_HZ 56000000ULL
+#define DSI_LANE_BYTE_FREQ_HZ 62000000ULL
 
 #define VSYNC 2
 #define VBP 26
-#define VFP 16
+#define VFP 16 //2836 /*10Hz*/ //1144 /*20Hz*/ //580 /*30Hz*/ //298 /*40Hz*/ //128 /*50Hz*/ //16 /*60Hz*/
 #define VACT 520
 #define HSYNC 6
 #define HBP 2
 #define HFP 56
 #define HACT 480
-#define LCD_WIDTH 480
+#define LCD_WIDTH 480 // TODO: 380 is the physical dimension, 480 is used because??? Can't it be reconfigured???
 #define LCD_HEIGHT 520
 
 #define LCD_Y_OFFSET 0
-#define LCD_X_OFFSET 50
+#define LCD_X_OFFSET 50 //60 // 50
 
 #define GFXMMU_LUT_FIRST 0
 #define GFXMMU_LUT_LAST 519
