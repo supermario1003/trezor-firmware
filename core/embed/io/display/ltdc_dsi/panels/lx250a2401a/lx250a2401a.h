@@ -29,9 +29,9 @@
 #define VACT 520
 #define HSYNC 6
 #define HBP 2
-#define HFP 56
-#define HACT 480
-#define LCD_WIDTH 480 // TODO: 380 is the physical dimension, 480 is used because??? Can't it be reconfigured???
+#define HFP 106 //56
+#define HACT 430 /*480*/
+#define LCD_WIDTH 430 //480 // TODO: 380 is the physical dimension, 480 is used because??? Can't it be reconfigured???
 #define LCD_HEIGHT 520
 
 #define LCD_Y_OFFSET 0
