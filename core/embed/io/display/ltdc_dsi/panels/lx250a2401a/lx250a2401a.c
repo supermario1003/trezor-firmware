@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma GCC optimize("O0")
 
 #include <trezor_bsp.h>
 #include <trezor_rtl.h>
@@ -81,7 +82,7 @@ bool panel_init(display_driver_t *drv) {
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x13);
-  ret = HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 10, 0xFF,
+  ret = HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 5, 0xFF,
                           (uint8_t[]){0x77, 0x01, 0x00, 0x00, 0x13});
   if (ret != HAL_OK) {
     return false;
@@ -101,7 +102,7 @@ bool panel_init(display_driver_t *drv) {
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x10);
-  ret = HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 10, 0xFF,
+  ret = HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 5, 0xFF,
                           (uint8_t[]){0x77, 0x01, 0x00, 0x00, 0x10});
   if (ret != HAL_OK) {
     return false;
@@ -198,7 +199,7 @@ bool panel_init(display_driver_t *drv) {
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x11);
-  ret = HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 10, 0xFF,
+  ret = HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 5, 0xFF,
                           (uint8_t[]){0x77, 0x01, 0x00, 0x00, 0x11});
   if (ret != HAL_OK) {
     return false;
@@ -441,7 +442,7 @@ bool panel_init(display_driver_t *drv) {
   // Write(Parameter , 0x00);
   // Write(Parameter , 0x00);
   ret =
-      HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 8, 0xEB,
+      HAL_DSI_LongWrite(&drv->hlcd_dsi, 0, DSI_DCS_LONG_PKT_WRITE, 7, 0xEB,
                         (uint8_t[]){0x02, 0x00, 0xE4, 0xE4, 0x88, 0x00, 0x00});
   if (ret != HAL_OK) {
     return false;
