@@ -45,6 +45,8 @@ __attribute__((section(".fb2"), aligned(PHYSICAL_FRAME_BUFFER_ALIGNMENT)))
 uint8_t physical_frame_buffer_1[ALIGNED_PHYSICAL_FRAME_BUFFER_SIZE];
 #endif
 
+volatile uint32_t refresh_counter = 0;
+
 #ifdef USE_TRUSTZONE
 void display_set_unpriv_access(bool unpriv) {
   // To allow unprivileged access both GFXMMU virtual buffers area and
@@ -204,6 +206,8 @@ void HAL_LTDC_LineEvenCallback(LTDC_HandleTypeDef *hltdc) {
   if (!drv->initialized) {
     return;
   }
+
+  refresh_counter++;
 
   if (drv->update_pending > 0) {
     drv->update_pending--;

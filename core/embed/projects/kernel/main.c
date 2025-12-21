@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma GCC optimize("O0")
 
 #include <trezor_model.h>
 #include <trezor_rtl.h>
@@ -37,6 +38,9 @@
 #include <util/option_bytes.h>
 #include <util/rsod.h>
 #include <util/unit_properties.h>
+
+#include <sys/irq.h>
+#include <sys/dbg_console.h>
 
 #ifdef USE_BUTTON
 #include <io/button.h>
@@ -102,6 +106,8 @@
 #include <io/usb.h>
 #include <io/usb_config.h>
 #endif
+
+extern volatile uint32_t refresh_counter;
 
 void drivers_init() {
 #ifdef SECURE_MODE
@@ -217,16 +223,21 @@ static void kernel_loop(applet_t *coreapp) {
 
     if (ticks() >= time) {
       static const uint32_t refresh_rates[] = {
-        2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 128 /*50Hz*/, 16 /*60Hz*/ };
-      static int idx = 5;
+        2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/ };
+      static int idx = 0;
+      float frequency;
 
-      time = ticks_timeout(10000);
-      (void)time;
+      irq_key_t key = irq_lock();
+      frequency = refresh_counter / 10.0f;
+      refresh_counter = 0;
+      irq_unlock(key);
 
-      display_refresh_rate_set(refresh_rates[idx]);
-      (void)refresh_rates;
+      dbg_printf("VFP=%d, frequency=%d.%d\n", (int)refresh_rates[idx], (int)frequency, (int)((frequency-(int)frequency)*100));
 
       idx = idx > 0 ? idx - 1 : 5;
+      display_refresh_rate_set(refresh_rates[idx]);
+
+      time = ticks_timeout(10000);      
     }
 
   } while (applet_is_alive(coreapp));
