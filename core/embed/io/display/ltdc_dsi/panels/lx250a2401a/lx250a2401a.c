@@ -75,6 +75,7 @@ const uint32_t *panel_lut_get(void) {
 
 bool panel_init(display_driver_t *drv) {
   HAL_StatusTypeDef ret;
+  static uint8_t buffer[16];
 
   // Write(Command , 0xFF);
   // Write(Parameter , 0x77);
@@ -499,6 +500,19 @@ bool panel_init(display_driver_t *drv) {
   // Write(Parameter , 0x00);
   ret = HAL_DSI_ShortWrite(&drv->hlcd_dsi, 0, DSI_DCS_SHORT_PKT_WRITE_P1, 0x35,
                            0x00);
+  if (ret != HAL_OK) {
+    return false;
+  }
+
+  //RGB565
+  ret = HAL_DSI_ShortWrite(&drv->hlcd_dsi, 0, DSI_DCS_SHORT_PKT_WRITE_P1, 0x3A,
+                           0x50);
+  if (ret != HAL_OK) {
+    return false;
+  }
+
+  ret = HAL_DSI_Read(&drv->hlcd_dsi, 0, &buffer[0], 1, DSI_DCS_SHORT_PKT_READ, 0x0C, NULL);
+
   if (ret != HAL_OK) {
     return false;
   }

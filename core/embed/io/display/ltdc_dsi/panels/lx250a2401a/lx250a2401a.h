@@ -25,11 +25,11 @@
 
 #define VSYNC 2
 #define VBP 26
-#define VFP 16 //2836 /*10Hz*/ //1144 /*20Hz*/ //580 /*30Hz*/ //298 /*40Hz*/ //128 /*50Hz*/ //16 /*60Hz*/
+#define VFP 16 //2836 /*10Hz*/ //1144 /*20Hz*/ //580 /*30Hz*/ //298 /*40Hz*/ //129 /*50Hz*/ //16 /*60Hz*/
 #define VACT 520
 #define HSYNC 6
 #define HBP 2
-#define HFP 106 //56
+#define HFP 20 //106 //56 - 56 is the orig val, changed to 106 as the hline has been stripped by 50px, changed to 20 because the pixel clocked has been change to 15.5MHz
 #define HACT 430 /*480*/
 #define LCD_WIDTH 430 //480 // TODO: 380 is the physical dimension, 480 is used because??? Can't it be reconfigured???
 #define LCD_HEIGHT 520

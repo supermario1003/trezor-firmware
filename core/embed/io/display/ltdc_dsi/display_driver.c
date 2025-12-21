@@ -57,10 +57,10 @@ static bool display_pll_init(void) {
 
 #if HSE_VALUE == 32000000
   // (((32 MHz / 8) * 125) / 27) = ~60 Hz
-  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 8, 125, 8, 8, 27); 
+  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 8, 124, 8, 8, 32); 
 #elif HSE_VALUE == 16000000
   // (((16 MHz / 4) * 125) / 27) = ~60 Hz
-  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 4, 125, 8, 8, 27);
+  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 4, 124, 8, 8, 32);
 #endif
 
   __HAL_RCC_PLL3_VCIRANGE(RCC_PLLVCIRANGE_0);
@@ -168,16 +168,16 @@ static bool display_dsi_init(display_driver_t *drv) {
   drv->DSIVidCfg.HSPolarity = DSI_HSYNC_ACTIVE_HIGH;
   drv->DSIVidCfg.VSPolarity = DSI_VSYNC_ACTIVE_HIGH;
   drv->DSIVidCfg.DEPolarity = DSI_DATA_ENABLE_ACTIVE_HIGH;
-  drv->DSIVidCfg.ColorCoding = DSI_RGB888;
+  drv->DSIVidCfg.ColorCoding = DSI_RGB565; //DSI_RGB888;
   drv->DSIVidCfg.Mode = PANEL_DSI_MODE;
   drv->DSIVidCfg.PacketSize = LCD_WIDTH; // In burst mode, the packet size must
                                          // be great or equal to the visible
                                          // width
   drv->DSIVidCfg.NumberOfChunks = 0; // No chunks in burst mode
   drv->DSIVidCfg.NullPacketSize = 0; // No null packet in burst mode
-  drv->DSIVidCfg.HorizontalSyncActive = HSYNC * 3; // TODO: '3' means: bytes per pixel
-  drv->DSIVidCfg.HorizontalBackPorch = HBP * 3; // TODO: '3' means: bytes per pixel
-  drv->DSIVidCfg.HorizontalLine = (HACT + HSYNC + HBP + HFP) * 3; // TODO: '3' means: bytes per pixel
+  drv->DSIVidCfg.HorizontalSyncActive = HSYNC * (62.0f / 15.5f); //(62.0f/18.519f);
+  drv->DSIVidCfg.HorizontalBackPorch = HBP * (62.0f / 15.5f); //(62.0f/18.519f);
+  drv->DSIVidCfg.HorizontalLine = (HACT + HSYNC + HBP + HFP) * (62.0f / 15.5f); //(62.0f/18.519f);
   drv->DSIVidCfg.VerticalSyncActive = VSYNC;
   drv->DSIVidCfg.VerticalBackPorch = VBP;
   drv->DSIVidCfg.VerticalFrontPorch = VFP;
