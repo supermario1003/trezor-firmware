@@ -63,6 +63,8 @@ def issue_credential(
 
     proto_msg = ThpPairingCredential(cred_metadata=credential_metadata, mac=mac)
     credential_raw = _encode_message_into_new_buffer(proto_msg)
+    from trezor.utils import hexlify_if_bytes
+    print(f"credential_raw: {hexlify_if_bytes(credential_raw)}")
     return credential_raw
 
 

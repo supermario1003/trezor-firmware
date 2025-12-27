@@ -131,6 +131,14 @@ class Handshake:
 
         aes_ctx.auth(self.h)
         tag_to_encrypted_key = aes_ctx.finish()
+        log.debug(
+            __name__,
+            "TH1 aesgcm key:%s nonce:%d aad:%s tag:%s",
+            hexlify_if_bytes(self.k),
+            0,
+            hexlify_if_bytes(self.h),
+            hexlify_if_bytes(tag_to_encrypted_key),
+        )
         encrypted_trezor_static_public_key = (
             encrypted_trezor_static_public_key + tag_to_encrypted_key
         )
@@ -142,6 +150,14 @@ class Handshake:
         aes_ctx = aesgcm(self.k, IV_1)
         aes_ctx.auth(self.h)
         tag = aes_ctx.finish()
+        log.debug(
+            __name__,
+            "TH1 aesgcm key:%s nonce:%d aad:%s tag:%s",
+            hexlify_if_bytes(self.k),
+            0,
+            hexlify_if_bytes(self.h),
+            hexlify_if_bytes(tag),
+        )
         self.h = _hash_of_two(self.h, tag)
         return (trezor_ephemeral_public_key, encrypted_trezor_static_public_key, tag)
 
@@ -153,9 +169,9 @@ class Handshake:
 
         aes_ctx = aesgcm(self.k, IV_2)
 
-        # The new value of hash `h` MUST be computed before the `encrypted_host_static_public_key` is decrypted.
-        # However, decryption of `encrypted_host_static_public_key` MUST use the previous value of `h` for
-        # authentication of the gcm tag.
+        ## The new value of hash `h` MUST be computed before the `encrypted_host_static_public_key` is decrypted.
+        ## However, decryption of `encrypted_host_static_public_key` MUST use the previous value of `h` for
+        ## authentication of the gcm tag.
         aes_ctx.auth(self.h)  # Authenticate with the previous value of `h`
         self.h = _hash_of_two(
             self.h, encrypted_host_static_public_key
@@ -236,6 +252,7 @@ def _hkdf(chaining_key: bytes, input: bytes) -> tuple[bytes, bytes]:
 
 
 def _hash_of_two(part_1: AnyBytes, part_2: AnyBytes) -> bytes:
+    print(f"E mix_hash {hexlify_if_bytes(part_1)} {hexlify_if_bytes(part_2)}")
     ctx = sha256(part_1)
     ctx.update(part_2)
     return ctx.digest()

@@ -7,7 +7,7 @@ use crate::error::{Error, Result};
 use core::marker::PhantomData;
 
 const CHECKSUM_LEN: u16 = crc32::CHECKSUM_LEN as u16;
-const NONCE_LEN: u16 = 8;
+pub const NONCE_LEN: usize = 8;
 const MAX_PAYLOAD_LEN: u16 = 60000;
 
 const MAX_CHANNEL_ID: u16 = 0xFFEF;
@@ -62,7 +62,7 @@ pub const fn channel_id_valid(channel_id: u16) -> bool {
     channel_id <= MAX_CHANNEL_ID || channel_id == BROADCAST_CHANNEL_ID
 }
 
-fn parse_u16(buffer: &[u8]) -> Result<(u16, &[u8])> {
+pub(crate) fn parse_u16(buffer: &[u8]) -> Result<(u16, &[u8])> {
     let (bytes, rest) = buffer
         .split_first_chunk::<2>()
         .ok_or(Error::MalformedData)?;
@@ -220,15 +220,16 @@ impl<R: Role> Header<R> {
 
     /// Payload length including checksum. Messages without checksum return 0.
     pub const fn payload_len(&self) -> u16 {
+        const nonce_len: u16 = NONCE_LEN as u16;
         match self {
             Self::Continuation { .. } => 0,
             Self::Ack { .. } => CHECKSUM_LEN,
             Self::CodecV1Request { .. } | Self::CodecV1Response => 0,
-            Self::ChannelAllocationRequest => NONCE_LEN + CHECKSUM_LEN,
+            Self::ChannelAllocationRequest => nonce_len + CHECKSUM_LEN,
             Self::ChannelAllocationResponse { payload_len } => *payload_len,
             Self::TransportError { .. } => 1 + CHECKSUM_LEN,
-            Self::Ping => NONCE_LEN + CHECKSUM_LEN,
-            Self::Pong => NONCE_LEN + CHECKSUM_LEN,
+            Self::Ping => nonce_len + CHECKSUM_LEN,
+            Self::Pong => nonce_len + CHECKSUM_LEN,
             Self::Handshake {
                 phase: _,
                 channel_id: _,
@@ -250,6 +251,24 @@ impl<R: Role> Header<R> {
 
     pub const fn new_continuation(channel_id: u16) -> Self {
         Self::Continuation { channel_id }
+    }
+
+    pub const fn new_channel_request() -> Self {
+        Self::ChannelAllocationRequest
+    }
+
+    pub const fn new_channel_response(payload: &[u8]) -> Self {
+        Self::ChannelAllocationResponse {
+            payload_len: (payload.len() + NONCE_LEN) as u16 + CHECKSUM_LEN,
+        }
+    }
+
+    pub const fn new_handshake(channel_id: u16, phase: HandshakeMessage, payload: &[u8]) -> Self {
+        Self::Handshake {
+            phase,
+            channel_id,
+            payload_len: payload.len() as u16 + CHECKSUM_LEN,
+        }
     }
 
     pub const fn new_encrypted(channel_id: u16, payload: &[u8]) -> Self {
@@ -301,6 +320,10 @@ impl<R: Role> Header<R> {
 
     pub const fn is_ack(&self) -> bool {
         matches!(self, Self::Ack { .. })
+    }
+
+    pub const fn is_error(&self) -> bool {
+        matches!(self, Self::TransportError { .. })
     }
 }
 

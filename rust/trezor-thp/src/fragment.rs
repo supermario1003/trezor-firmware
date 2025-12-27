@@ -35,7 +35,7 @@ impl<R: Role> Fragmenter<R> {
         }
         if payload.len() + CHECKSUM_LEN != self.header.payload_len().into() {
             // buffer changed since new
-            return Err(Error::UnexpectedInput);
+            return Err(Error::UnexpectedInput); // XXX here
         }
         if self.is_done() {
             return Ok(false);
