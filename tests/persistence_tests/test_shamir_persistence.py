@@ -17,7 +17,6 @@
 import pytest
 
 from trezorlib import device, messages
-from trezorlib.client import ProtocolVersion
 from trezorlib.debuglink import DebugLink, LayoutType
 from trezorlib.messages import RecoveryStatus
 
@@ -85,7 +84,8 @@ def test_abort(core_emulator: Emulator):
     assert debug.read_layout().main_component() == "Homescreen"
 
     # create a new client, since the existing THP channel state has been wiped
-    device_handler = BackgroundDeviceHandler(core_emulator.client.get_new_client())
+    core_emulator.client.reset_instance()
+    device_handler = BackgroundDeviceHandler(core_emulator.client)
     features = device_handler.features()
     assert features.recovery_status == RecoveryStatus.Nothing
 
@@ -143,7 +143,7 @@ def test_recovery_on_old_wallet(core_emulator: Emulator):
             assert layout.main_component() == "MnemonicKeyboard"
 
     device_handler = BackgroundDeviceHandler(core_emulator.client)
-    if device_handler.client.protocol_version != ProtocolVersion.V1:
+    if not device_handler.client.is_protocol_v1():
         pytest.skip("Should run only on Protocol_V1")
 
     debug = device_handler.debuglink()

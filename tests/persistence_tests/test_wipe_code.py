@@ -61,7 +61,7 @@ def test_wipe_code_activate_core(core_emulator: Emulator):
     # Enter the wipe code instead of the current PIN
     expected = message_filters.ButtonRequest(code=messages.ButtonRequestType.PinEntry)
     assert expected.match(ret)
-    session._write(messages.ButtonAck())
+    session.client._write(session, messages.ButtonAck())
     core_emulator.client.debug.input(WIPE_CODE)
 
     # preserving screenshots even after it dies and starts again
@@ -98,7 +98,7 @@ def test_wipe_code_activate_legacy():
         # Enter the wipe code instead of the current PIN
         assert isinstance(ret, messages.PinMatrixRequest)
         wipe_code_encoded = emu.client.debug.encode_pin(WIPE_CODE)
-        session._write(messages.PinMatrixAck(pin=wipe_code_encoded))
+        session.client._write(session, messages.PinMatrixAck(pin=wipe_code_encoded))
 
         # wait 30 seconds for emulator to shut down
         # this will raise a TimeoutError if the emulator doesn't die.
