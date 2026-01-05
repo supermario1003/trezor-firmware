@@ -1,9 +1,9 @@
 import secrets
 import time
 import typing as t
+from contextlib import contextmanager
 from hashlib import sha256
 from unittest.mock import patch
-from contextlib import contextmanager
 
 import pytest
 import typing_extensions as tx
