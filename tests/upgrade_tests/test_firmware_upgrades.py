@@ -23,7 +23,6 @@ from shamir_mnemonic import shamir
 
 from trezorlib import btc, debuglink, device, exceptions, fido, messages, models
 from trezorlib.cardano import get_public_key
-from trezorlib.client import ProtocolVersion
 from trezorlib.messages import (
     ApplySettings,
     BackupAvailability,
@@ -82,29 +81,30 @@ def lower_models_minimum_version(func):
     return wrapper
 
 
-def _get_session(client: "Client", passphrase: str | object = "") -> "Session":
-    if client.protocol_version != ProtocolVersion.V1:
+def _get_session(client: "Client", passphrase: str = "") -> "Session":
+    if client.is_thp():
         return client.get_session(passphrase=passphrase)
     if client.version >= (2, 3, 0):
         return client.get_session(passphrase=passphrase)
 
-    from trezorlib.client import SessionV1
+    from trezorlib.protocol_v1 import SessionV1, TrezorClientV1
 
     from ..common import TEST_ADDRESS_N
 
-    session = SessionV1.new(client)
+    assert isinstance(client.client, TrezorClientV1)
+    session = SessionV1(client.client)
     resp = session.call_raw(
         messages.GetAddress(address_n=TEST_ADDRESS_N, coin_name="Testnet")
     )
     if isinstance(resp, messages.ButtonRequest):
-        resp = session._callback_button(resp)
+        resp = session.client._callback_button(session, resp)
     if isinstance(resp, messages.PassphraseRequest):
         resp = session.call_raw(messages.PassphraseAck(passphrase=passphrase))
     if isinstance(resp, messages.Deprecated_PassphraseStateRequest):
         session.id = resp.state
         resp = session.call_raw(messages.Deprecated_PassphraseStateAck())
     while isinstance(resp, messages.ButtonRequest):
-        resp = session._callback_button(resp)
+        resp = session.client._callback_button(session, resp)
     return session
 
 
@@ -447,8 +447,8 @@ def test_upgrade_shamir_backup(gen: str, tag: Optional[str]):
         # Get a passphrase-less and a passphrased address.
         session = _get_session(emu.client)
         address = btc.get_address(session, "Bitcoin", PATH)
-        if emu.client.protocol_version == ProtocolVersion.V1:
-            session.call(messages.Initialize(new_session=True))
+        # if emu.client.is_protocol_v1():
+        #     session.call(messages.Initialize())
         new_session = _get_session(emu.client, passphrase="TREZOR")
         address_passphrase = btc.get_address(new_session, "Bitcoin", PATH)
 

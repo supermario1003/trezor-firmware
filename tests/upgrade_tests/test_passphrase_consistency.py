@@ -20,8 +20,7 @@ import pytest
 
 from trezorlib import btc, device, mapping, messages, models, protobuf
 from trezorlib._internal.emulator import Emulator
-from trezorlib.client import ProtocolVersion, SessionV1
-from trezorlib.debuglink import DebugSession as Session
+from trezorlib.protocol_v1 import SessionV1, TrezorClientV1
 from trezorlib.tools import parse_path
 
 from ..emulators import EmulatorWrapper
@@ -55,7 +54,6 @@ def emulator(gen: str, tag: str) -> Iterator[Emulator]:
             entropy_check_count=0,
             backup_type=messages.BackupType.Bip39,
         )
-        emu.client.invalidate()
         resp = emu.client.get_seedless_session().call(
             ApplySettingsCompat(use_passphrase=True, passphrase_source=SOURCE_HOST)
         )
@@ -70,7 +68,7 @@ def emulator(gen: str, tag: str) -> Iterator[Emulator]:
 )
 def test_passphrase_works(emulator: Emulator):
     """Check that passphrase handling in trezorlib works correctly in all versions."""
-    protocol_v1 = emulator.client.protocol_version == ProtocolVersion.V1
+    protocol_v1 = emulator.client.is_protocol_v1()
     if (
         emulator.client.features.model == "T" and emulator.client.version < (2, 3, 3)
     ) or (
@@ -99,7 +97,8 @@ def test_passphrase_works(emulator: Emulator):
     with emulator.client as client:
         client.set_expected_responses(expected_responses)
         if protocol_v1:
-            session = Session(SessionV1.new(emulator.client))
+            assert isinstance(client.client, TrezorClientV1)
+            session = SessionV1(client.client)
             resp = session.call_raw(
                 messages.GetAddress(
                     address_n=parse_path("44h/1h/0h/0/0"),
@@ -109,9 +108,9 @@ def test_passphrase_works(emulator: Emulator):
             if isinstance(resp, messages.PassphraseRequest):
                 resp = session.call_raw(messages.PassphraseAck(passphrase="TREZOR"))
             if isinstance(resp, messages.ButtonRequest):
-                resp = session._callback_button(resp)
+                resp = session.client._callback_button(session, resp)
             if isinstance(resp, messages.ButtonRequest):
-                resp = session._callback_button(resp)
+                resp = session.client._callback_button(session, resp)
         else:
             session = client.get_session(passphrase="TREZOR")
             btc.get_address(session, "Testnet", parse_path("44h/1h/0h/0/0"))
@@ -125,7 +124,7 @@ def test_init_device(emulator: Emulator):
     """Check that passphrase caching and session_id retaining works correctly across
     supported versions.
     """
-    protocol_v1 = emulator.client.protocol_version == ProtocolVersion.V1
+    protocol_v1 = emulator.client.is_protocol_v1()
     if (
         emulator.client.features.model == "T" and emulator.client.version < (2, 3, 3)
     ) or (
@@ -161,7 +160,8 @@ def test_init_device(emulator: Emulator):
     with emulator.client as client:
         client.set_expected_responses(expected_responses)
         if protocol_v1:
-            session = Session(SessionV1.new(emulator.client))
+            assert isinstance(client.client, TrezorClientV1)
+            session = SessionV1(client.client)
             resp = session.call_raw(
                 messages.GetAddress(
                     address_n=parse_path("44h/1h/0h/0/0"),
@@ -171,9 +171,9 @@ def test_init_device(emulator: Emulator):
             if isinstance(resp, messages.PassphraseRequest):
                 resp = session.call_raw(messages.PassphraseAck(passphrase="TREZOR"))
             if isinstance(resp, messages.ButtonRequest):
-                resp = session._callback_button(resp)
+                resp = session.client._callback_button(session, resp)
             if isinstance(resp, messages.ButtonRequest):
-                resp = session._callback_button(resp)
+                resp = session.client._callback_button(session, resp)
 
         else:
             session = client.get_session(passphrase="TREZOR")

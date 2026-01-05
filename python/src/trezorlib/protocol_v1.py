@@ -202,8 +202,9 @@ class SessionV1(client.Session["TrezorClientV1", t.Optional[bytes]]):
 
         # after processing any PassphraseRequest, we should have an Address response
         resp = messages.PublicKey.ensure_isinstance(resp)
-        assert resp.root_fingerprint is not None
-        self._root_fingerprint = resp.root_fingerprint.to_bytes(4, "big")
+        if resp.root_fingerprint is not None:
+            # root fingerprint is not present in old FWs
+            self._root_fingerprint = resp.root_fingerprint.to_bytes(4, "big")
         self.client.refresh_features()
 
     def close(self) -> None:

@@ -346,7 +346,11 @@ class TrezorClient(t.Generic[SessionType], metaclass=ABCMeta):
             derive_cardano
             and messages.Capability.Cardano not in self.features.capabilities
         ):
-            raise exceptions.TrezorException("Cardano is not available on this device.")
+            # False positive for versions <= 2.1.4, cardano was introduced in 2.0.8
+            if self.version >= (2, 1, 5) or self.version < (2, 0, 8):
+                raise exceptions.TrezorException(
+                    "Cardano is not available on this device."
+                )
         if (
             passphrase is PassphraseSetting.ON_DEVICE
             and messages.Capability.PassphraseEntry not in self.features.capabilities
