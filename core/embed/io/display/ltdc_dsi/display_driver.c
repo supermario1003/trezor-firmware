@@ -139,7 +139,7 @@ static bool display_dsi_init(display_driver_t *drv) {
   drv->hlcd_dsi.Init.TXEscapeCkdiv = 4; // ~15.5 MHz => ~7.75 Mbps (in LP)
   drv->hlcd_dsi.Init.NumberOfLanes = PANEL_DSI_LANES;
   drv->hlcd_dsi.Init.PHYFrequencyRange = DSI_DPHY_FRANGE_450MHZ_510MHZ;
-  drv->hlcd_dsi.Init.PHYLowPowerOffset = 0; // LPXO - no offset
+  drv->hlcd_dsi.Init.PHYLowPowerOffset = PHY_LP_OFFSSET_0_CLKP; // LPXO - no offset
 
 #if HSE_VALUE == 32000000
   // Output lane byte clock = 62 MHz, PHY clock = 496 MHz
