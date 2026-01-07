@@ -32,11 +32,10 @@ typedef struct {
   uint16_t version;
   uint8_t initialized;  // 0 = not set, 1 = valid data present
   uint8_t reserved;     // alignment/padding
-  float min_temp_c;
-  float max_temp_c;
-} telemetry_data_t;
+  telemetry_data_t data;
+} telemetry_t;
 
-static bool telemetry_read(telemetry_data_t* out) {
+static bool telemetry_read(telemetry_t* out) {
   size_t size = 0;
   if (!backup_ram_read(BACKUP_RAM_KEY_TELEMETRY, out, sizeof(*out), &size)) {
     return false;
@@ -50,47 +49,48 @@ static bool telemetry_read(telemetry_data_t* out) {
   return true;
 }
 
-static bool telemetry_write(const telemetry_data_t* data) {
+static bool telemetry_write(const telemetry_t* data) {
   return backup_ram_write(BACKUP_RAM_KEY_TELEMETRY, BACKUP_RAM_ITEM_PUBLIC,
                           data, sizeof(*data));
 }
 
 void telemetry_update_battery_temp(float temp_c) {
-  telemetry_data_t data;
-  bool have = telemetry_read(&data) && data.initialized == 1;
+  telemetry_t telemetry;
+  bool have = telemetry_read(&telemetry) && telemetry.initialized == 1;
 
   if (!have) {
-    data.version = TELEMETRY_DATA_VERSION;
-    data.initialized = 1;
-    data.reserved = 0;
-    data.min_temp_c = temp_c;
-    data.max_temp_c = temp_c;
-    telemetry_write(&data);
+    telemetry.version = TELEMETRY_DATA_VERSION;
+    telemetry.initialized = 1;
+    telemetry.reserved = 0;
+    telemetry.data.min_temp_c = temp_c;
+    telemetry.data.max_temp_c = temp_c;
+    telemetry_write(&telemetry);
     return;
   }
 
   bool changed = false;
-  if (temp_c < data.min_temp_c) {
-    data.min_temp_c = temp_c;  // min can only decrease
+  if (temp_c < telemetry.data.min_temp_c) {
+    telemetry.data.min_temp_c = temp_c;  // min can only decrease
     changed = true;
   }
-  if (temp_c > data.max_temp_c) {
-    data.max_temp_c = temp_c;  // max can only increase
+  if (temp_c > telemetry.data.max_temp_c) {
+    telemetry.data.max_temp_c = temp_c;  // max can only increase
     changed = true;
   }
 
   if (changed) {
-    telemetry_write(&data);
+    telemetry_write(&telemetry);
   }
 }
 
-bool telemetry_get_battery_temp_min_max(float* out_min_c, float* out_max_c) {
-  telemetry_data_t data;
-  if (!telemetry_read(&data) || data.initialized != 1) {
+bool telemetry_get(telemetry_data_t* out) {
+  telemetry_t telemetry;
+  if (!telemetry_read(&telemetry) || telemetry.initialized != 1) {
     return false;
   }
-  if (out_min_c) *out_min_c = data.min_temp_c;
-  if (out_max_c) *out_max_c = data.max_temp_c;
+  if (out != NULL) {
+    *out = telemetry.data;
+  }
   return true;
 }
 

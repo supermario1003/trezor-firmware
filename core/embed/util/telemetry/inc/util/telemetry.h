@@ -22,6 +22,14 @@
 #include <trezor_types.h>
 
 /**
+ * @brief Telemetry data structure.
+ */
+typedef struct {
+  float min_temp_c; /**< Minimum recorded battery temperature in Celsius. */
+  float max_temp_c; /**< Maximum recorded battery temperature in Celsius. */
+} telemetry_data_t;
+
+/**
  * @brief Record current battery temperature (in Celsius) into telemetry
  * storage.
  *
@@ -36,13 +44,9 @@ void telemetry_update_battery_temp(float temp_c);
 /**
  * @brief Retrieve stored min/max battery temperature (in Celsius).
  *
- * Any of the output pointers may be NULL if not needed.
- *
- * @param[out] out_min_c Pointer to where the minimum temperature will be
- *                       stored (may be NULL).
- * @param[out] out_max_c Pointer to where the maximum temperature will be
- *                       stored (may be NULL).
+ * @param[out] out Pointer to where the telemetry data will be stored (may be
+ * NULL).
  *
  * @return true if values are available (initialized), false otherwise.
  */
-bool telemetry_get_battery_temp_min_max(float* out_min_c, float* out_max_c);
+bool telemetry_get(telemetry_data_t* out);
