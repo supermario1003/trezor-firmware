@@ -56,5 +56,5 @@ void ensure_secmon_min_version(uint8_t version) {
   monoctr_write(MONOCTR_SECMON_VERSION, version);
   uint8_t val = 0;
   ensure(monoctr_read(MONOCTR_SECMON_VERSION, &val), NULL);
-  ensure(sectrue * (val == version), "Firmware downgrade protection");
+  ensure(sectrue * (val == version), "Secmon downgrade protection");
 }
