@@ -509,11 +509,6 @@ static uint32_t ui_estimate_time_ms(storage_pin_op_t op) {
       unlock_time(pin_index, &time_ms, &optiga_sec,
                   &optiga_last_time_decreased_ms);
       break;
-    case STORAGE_PIN_OP_CHANGE:
-      set_pin_time(&time_ms, &optiga_sec, &optiga_last_time_decreased_ms);
-      unlock_time(pin_index, &time_ms, &optiga_sec,
-                  &optiga_last_time_decreased_ms);
-      break;
     default:
       assert(false);
   }

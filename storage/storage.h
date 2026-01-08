@@ -79,7 +79,6 @@ enum storage_ui_message_t {
 typedef enum {
   STORAGE_PIN_OP_SET = 0,
   STORAGE_PIN_OP_VERIFY,
-  STORAGE_PIN_OP_CHANGE,
 } storage_pin_op_t;
 
 typedef secbool (*PIN_UI_WAIT_CALLBACK)(uint32_t wait, uint32_t progress,
