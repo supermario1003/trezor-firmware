@@ -1290,7 +1290,7 @@ static storage_unlock_result_t unlock(const uint8_t *pin, size_t pin_len,
                             &tropic_mac_and_destroy_reset_key_len) != sectrue ||
       tropic_mac_and_destroy_reset_key_len !=
           sizeof(tropic_mac_and_destroy_reset_key)) {
-    return UNLOCK_TROPIC_RESET_FAILED;
+    return UNLOCK_TROPIC_RESET_MAC_AND_DESTROY_FAILED;
   }
   if (!tropic_pin_reset_slots(ui_progress, ctr,
                               tropic_mac_and_destroy_reset_key)) {
