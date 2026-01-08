@@ -85,10 +85,53 @@ STATIC mp_obj_t mod_trezorconfig_unlock(mp_obj_t pin, mp_obj_t ext_salt) {
                    MP_ERROR_TEXT("Invalid length of external salt."));
   }
 
-  if (sectrue != storage_unlock(pin_b.buf, pin_b.len, ext_salt_b.buf)) {
-    return mp_const_false;
+  switch (storage_unlock(pin_b.buf, pin_b.len, ext_salt_b.buf)) {
+    case UNLOCK_OK:
+      return mp_const_true;
+    case UNLOCK_NOT_INITIALIZED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Device is not initialized."));
+    case UNLOCK_NO_PIN:
+      mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("No PIN is set."));
+    case UNLOCK_PIN_GET_FAILS_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Failed to get PIN failure counter."));
+    case UNLOCK_TOO_MANY_FAILS:
+      mp_raise_msg(
+          &mp_type_RuntimeError,
+          MP_ERROR_TEXT("Too many incorrect PIN attempts; storage wiped."));
+    case UNLOCK_UI_ISSUE:
+      mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("UI callback issue."));
+    case UNLOCK_INCREASE_FAILS_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Failed to increase PIN failure counter."));
+    case UNLOCK_INCORRECT_PIN:
+      return mp_const_false;
+    case UNLOCK_WRONG_STORAGE_VERSION:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Wrong storage version."));
+    case UNLOCK_OPTIGA_HMAC_RESET_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("OPTIGA HMAC reset failed."));
+    case UNLOCK_OPTIGA_COUNTER_RESET_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("OPTIGA counter reset failed."));
+    case UNLOCK_TROPIC_RESET_MAC_AND_DESTROY_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Tropic MAC and destroy reset failed."));
+    case UNLOCK_TRPOIC_RESET_SLOTS_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Tropic slots reset failed."));
+    case UNLOCK_PIN_RESET_FAILS_FAILED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Failed to reset PIN failure counter."));
+    case UNLOCK_UNKNOWN:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Something went wrong during unlock."));
+    default:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Something went wrong during unlock."));
   }
-  return mp_const_true;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(mod_trezorconfig_unlock_obj,
                                  mod_trezorconfig_unlock);
@@ -174,10 +217,26 @@ STATIC mp_obj_t mod_trezorconfig_change_pin(size_t n_args,
     new_ext_salt = ext_salt_b.buf;
   }
 
-  if (sectrue != storage_change_pin(newpin.buf, newpin.len, new_ext_salt)) {
-    return mp_const_false;
+  switch (storage_change_pin(newpin.buf, newpin.len, new_ext_salt)) {
+    case PIN_CHANGE_OK:
+      return mp_const_true;
+    case PIN_CHANGE_WIPE_CODE:
+      return mp_const_false;
+    case PIN_CHANGE_STORAGE_LOCKED:
+      mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Storage is locked."));
+    case PIN_CHANGE_WRONG_ARGUMENT:
+      mp_raise_msg(&mp_type_ValueError,
+                   MP_ERROR_TEXT("Wrong argument provided."));
+    case PIN_CHANGE_NOT_INITIALIZED:
+      mp_raise_msg(&mp_type_RuntimeError,
+                   MP_ERROR_TEXT("Device is not initialized."));
+    case PIN_CHANGE_CANNOT_SET_PIN:
+      mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Cannot set the PIN."));
+    case PIN_CHANGE_UNKNOWN:
+      mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Change PIN failed."));
+    default:
+      mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Change PIN failed."));
   }
-  return mp_const_true;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mod_trezorconfig_change_pin_obj, 2,
                                            2, mod_trezorconfig_change_pin);

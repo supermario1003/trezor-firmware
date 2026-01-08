@@ -564,8 +564,9 @@ access_violation:
   apptask_access_violation();
 }
 
-secbool storage_unlock__verified(const uint8_t *pin, size_t pin_len,
-                                 const uint8_t *ext_salt) {
+storage_unlock_result_t storage_unlock__verified(const uint8_t *pin,
+                                                 size_t pin_len,
+                                                 const uint8_t *ext_salt) {
   if (!probe_read_access(pin, pin_len)) {
     goto access_violation;
   }
@@ -581,8 +582,8 @@ access_violation:
   return secfalse;
 }
 
-secbool storage_change_pin__verified(const uint8_t *newpin, size_t newpin_len,
-                                     const uint8_t *new_ext_salt) {
+storage_pin_change_result_t storage_change_pin__verified(
+    const uint8_t *newpin, size_t newpin_len, const uint8_t *new_ext_salt) {
   if (!probe_read_access(newpin, newpin_len)) {
     goto access_violation;
   }

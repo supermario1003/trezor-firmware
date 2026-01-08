@@ -283,12 +283,8 @@ bool protectChangePin(bool removal) {
   bool ret = config_changePin(new_pin);
   memzero(new_pin, sizeof(new_pin));
   if (ret == false) {
-    if (removal) {
-      fsm_sendFailure(FailureType_Failure_PinInvalid, NULL);
-    } else {
-      fsm_sendFailure(FailureType_Failure_ProcessError,
-                      _("The new PIN must be different from your wipe code."));
-    }
+    fsm_sendFailure(FailureType_Failure_ProcessError,
+                    _("The new PIN must be different from your wipe code."));
   }
   return ret;
 }

@@ -81,6 +81,34 @@ typedef enum {
   STORAGE_PIN_OP_VERIFY,
 } storage_pin_op_t;
 
+typedef enum {
+  UNLOCK_OK = 0,
+  UNLOCK_NOT_INITIALIZED = 1,
+  UNLOCK_NO_PIN = 2,
+  UNLOCK_PIN_GET_FAILS_FAILED = 3,
+  UNLOCK_TOO_MANY_FAILS = 4,
+  UNLOCK_UI_ISSUE = 5,
+  UNLOCK_INCREASE_FAILS_FAILED = 6,
+  UNLOCK_INCORRECT_PIN = 7,
+  UNLOCK_WRONG_STORAGE_VERSION = 8,
+  UNLOCK_OPTIGA_HMAC_RESET_FAILED = 9,
+  UNLOCK_OPTIGA_COUNTER_RESET_FAILED = 10,
+  UNLOCK_TROPIC_RESET_MAC_AND_DESTROY_FAILED = 11,
+  UNLOCK_TRPOIC_RESET_SLOTS_FAILED = 12,
+  UNLOCK_PIN_RESET_FAILS_FAILED = 13,
+  UNLOCK_UNKNOWN = 14,
+} storage_unlock_result_t;
+
+typedef enum {
+  PIN_CHANGE_OK = 0,
+  PIN_CHANGE_WIPE_CODE = 1,
+  PIN_CHANGE_STORAGE_LOCKED = 2,
+  PIN_CHANGE_WRONG_ARGUMENT = 3,
+  PIN_CHANGE_NOT_INITIALIZED = 4,
+  PIN_CHANGE_CANNOT_SET_PIN = 5,
+  PIN_CHANGE_UNKNOWN = 6,
+} storage_pin_change_result_t;
+
 typedef secbool (*PIN_UI_WAIT_CALLBACK)(uint32_t wait, uint32_t progress,
                                         enum storage_ui_message_t message);
 
@@ -89,13 +117,14 @@ void storage_init(PIN_UI_WAIT_CALLBACK callback, const uint8_t *salt,
 void storage_wipe(void);
 secbool storage_is_unlocked(void);
 void storage_lock(void);
-secbool storage_unlock(const uint8_t *pin, size_t pin_len,
-                       const uint8_t *ext_salt);
+storage_unlock_result_t storage_unlock(const uint8_t *pin, size_t pin_len,
+                                       const uint8_t *ext_salt);
 secbool storage_has_pin(void);
 secbool storage_pin_fails_increase(void);
 uint32_t storage_get_pin_rem(void);
-secbool storage_change_pin(const uint8_t *newpin, size_t newpin_len,
-                           const uint8_t *new_ext_salt);
+storage_pin_change_result_t storage_change_pin(const uint8_t *newpin,
+                                               size_t newpin_len,
+                                               const uint8_t *new_ext_salt);
 void storage_ensure_not_wipe_code(const uint8_t *pin, size_t pin_len);
 secbool storage_has_wipe_code(void);
 secbool storage_change_wipe_code(const uint8_t *pin, size_t pin_len,

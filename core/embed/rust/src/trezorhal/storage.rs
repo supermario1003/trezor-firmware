@@ -128,7 +128,7 @@ pub fn lock() {
 /// Returns true if the PIN + salt combination is correct.
 pub fn unlock(pin: &str, salt: Option<&ExternalSalt>) -> bool {
     let salt = salt.map(|s| s.as_ptr()).unwrap_or(ptr::null());
-    ffi::sectrue == unsafe { ffi::storage_unlock(pin.as_ptr() as *const _, pin.len(), salt) }
+    ffi::sectrue == unsafe { ffi::storage_unlock(pin.as_ptr() as *const _, pin.len(), salt).into() }
 }
 
 /// Change PIN and/or external salt.
@@ -142,6 +142,7 @@ pub fn change_pin(new_pin: &str, new_salt: Option<&ExternalSalt>) -> bool {
                 new_pin.len(),
                 new_salt.map(|s| s.as_ptr()).unwrap_or(ptr::null()),
             )
+            .into()
         }
 }
 

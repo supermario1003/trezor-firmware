@@ -51,10 +51,7 @@ async def change_pin(msg: ChangePin) -> Success:
 
     # write into storage
     if not config.change_pin(newpin, salt):
-        if newpin:
-            await error_pin_matches_wipe_code()
-        else:
-            await error_pin_invalid()
+        await error_pin_matches_wipe_code()
 
     utils.notify_send(utils.NOTIFY_PIN_CHANGE)
 
