@@ -128,22 +128,22 @@ pub fn lock() {
 /// Returns true if the PIN + salt combination is correct.
 pub fn unlock(pin: &str, salt: Option<&ExternalSalt>) -> bool {
     let salt = salt.map(|s| s.as_ptr()).unwrap_or(ptr::null());
-    ffi::sectrue == unsafe { ffi::storage_unlock(pin.as_ptr() as *const _, pin.len(), salt).into() }
+    let result = unsafe { ffi::storage_unlock(pin.as_ptr() as *const _, pin.len(), salt) };
+    matches!(result, ffi::storage_unlock_result_t::UNLOCK_OK)
 }
 
 /// Change PIN and/or external salt.
 /// Returns true if the PIN + salt combination is correct and the change was
 /// successful.
 pub fn change_pin(new_pin: &str, new_salt: Option<&ExternalSalt>) -> bool {
-    ffi::sectrue
-        == unsafe {
-            ffi::storage_change_pin(
-                new_pin.as_ptr() as *const _,
-                new_pin.len(),
-                new_salt.map(|s| s.as_ptr()).unwrap_or(ptr::null()),
-            )
-            .into()
-        }
+    let result = unsafe {
+        ffi::storage_change_pin(
+            new_pin.as_ptr() as *const _,
+            new_pin.len(),
+            new_salt.map(|s| s.as_ptr()).unwrap_or(ptr::null()),
+        )
+    };
+    matches!(result, ffi::storage_pin_change_result_t::PIN_CHANGE_OK)
 }
 
 /// Check if storage has PIN set.
