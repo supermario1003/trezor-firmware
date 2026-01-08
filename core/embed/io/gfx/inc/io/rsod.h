@@ -17,15 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIB_RSOD_H
-#define LIB_RSOD_H
+#pragma once
 
+#include <sys/bootutils.h>
 #include <sys/systask.h>
 
-// Shows RSOD (Red Screen of Death) using terminal.
+/**
+ * Shows RSOD (Red Screen of Death) using terminal.
+ *
+ * @param pminfo Pointer to the postmortem information structure.
+ */
 void rsod_terminal(const systask_postmortem_t* pminfo);
 
-// Shows RSOD (Red Screen of Death) using Rust GUI.
+/**
+ * Shows RSOD (Red Screen of Death) using Rust GUI.
+ *
+ * @param pminfo Pointer to the postmortem information structure.
+ */
 void rsod_gui(const systask_postmortem_t* pminfo);
 
 #ifdef KERNEL_MODE
@@ -35,6 +43,10 @@ void rsod_gui(const systask_postmortem_t* pminfo);
 // (may be called from interrupt context)
 void rsod_panic_handler(const systask_postmortem_t* pminfo);
 
-#endif  // KERNEL_MODE
+/**
+ * Shows RSOD screen with "Device wiped" message
+ * and shuts down the device.
+ */
+void show_wipe_info(const bootutils_wipe_info_t* info);
 
-#endif  // LIB_RSOD_H
+#endif  // KERNEL_MODE

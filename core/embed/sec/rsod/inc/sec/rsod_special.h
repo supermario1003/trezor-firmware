@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <sys/bootutils.h>
+#define ALL_DATA_ERASED_MESSAGE "All data has been erased from the device"
 
 /**
  * Shows RSOD screen with "Wipe code entered" message
@@ -38,9 +38,3 @@ void __attribute__((noreturn)) show_pin_too_many_screen(void);
  * and shuts down the device.
  */
 void __attribute__((noreturn)) show_install_restricted_screen(void);
-
-/**
- * Shows RSOD screen with "Device wiped" message
- * and shuts down the device.
- */
-void show_wipe_info(const bootutils_wipe_info_t *info);
