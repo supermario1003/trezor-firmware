@@ -23,6 +23,7 @@
 #include <io/display.h>
 #include <io/display_utils.h>
 #include <io/usb_config.h>
+#include <rtl/logging.h>
 #include <sec/random_delays.h>
 #include <sec/secret.h>
 #include <sys/bootargs.h>
@@ -36,6 +37,8 @@
 #include <util/rsod.h>
 #include <util/rsod_special.h>
 #include <util/unit_properties.h>
+
+LOG_DECLARE(bootloader);
 
 #ifdef USE_BOOT_UCB
 #include <util/boot_ucb.h>
@@ -162,7 +165,9 @@ static secbool boot_sequence(void) {
 
 #ifdef USE_HAPTIC
   ts_t status = haptic_init();
-  ensure_ok(status, "Haptic driver initialization failed");
+  if (ts_error(status)) {
+    LOG_ERR("haptic driver init failed");
+  }
 #endif
 
 #ifdef USE_RTC

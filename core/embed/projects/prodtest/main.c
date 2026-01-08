@@ -26,6 +26,7 @@
 #include <io/usb.h>
 #include <io/usb_config.h>
 #include <rtl/cli.h>
+#include <rtl/logging.h>
 #include <sys/system.h>
 #include <sys/systick.h>
 #include <util/board_capabilities.h>
@@ -37,6 +38,8 @@
 #include "rust_types.h"
 #include "rust_ui_prodtest.h"
 #include "sys/sysevent.h"
+
+LOG_DECLARE(prodtest);
 
 #ifdef USE_BUTTON
 #include <io/button.h>
@@ -185,6 +188,7 @@ static void drivers_init(void) {
   ts_t status;
   status = haptic_init();
   if (ts_error(status)) {
+    LOG_ERR("haptic driver init failed");
   }
 #endif
 #ifdef USE_RGB_LED

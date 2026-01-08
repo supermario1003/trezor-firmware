@@ -22,6 +22,7 @@
 
 #include <gfx/gfx_bitblt.h>
 #include <io/display.h>
+#include <rtl/logging.h>
 #include <sec/random_delays.h>
 #include <sec/secret.h>
 #include <sec/secure_aes.h>
@@ -37,6 +38,8 @@
 #include <util/option_bytes.h>
 #include <util/rsod.h>
 #include <util/unit_properties.h>
+
+LOG_DECLARE(kernel);
 
 #ifdef USE_BUTTON
 #include <io/button.h>
@@ -171,7 +174,10 @@ void drivers_init() {
 
 #ifdef USE_HAPTIC
   ts_t status = haptic_init();
-  ensure_ok(status, "haptic driver initialization failed");
+  if (ts_error(status)) {
+    LOG_ERR("haptic driver init failed");
+  }
+
 #endif
 
 #ifdef USE_BLE

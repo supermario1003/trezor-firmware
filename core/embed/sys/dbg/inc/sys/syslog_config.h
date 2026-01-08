@@ -40,8 +40,24 @@
 #define SYSLOG_coreapp_main_MAX_LOG_LEVEL SYSLOG_DEFAULT_LOG_LEVEL
 #endif
 
+#ifndef SYSLOG_kernel_MAX_LOG_LEVEL
+#define SYSLOG_kernel_MAX_LOG_LEVEL SYSLOG_DEFAULT_LOG_LEVEL
+#endif
+
+#ifndef SYSLOG_bootloader_MAX_LOG_LEVEL
+#define SYSLOG_bootloader_MAX_LOG_LEVEL SYSLOG_DEFAULT_LOG_LEVEL
+#endif
+
+#ifndef SYSLOG_prodtest_MAX_LOG_LEVEL
+#define SYSLOG_prodtest_MAX_LOG_LEVEL SYSLOG_DEFAULT_LOG_LEVEL
+#endif
+
 #ifndef SYSLOG_bootutils_MAX_LOG_LEVEL
 #define SYSLOG_bootutils_MAX_LOG_LEVEL SYSLOG_DEFAULT_LOG_LEVEL
+#endif
+
+#ifndef SYSLOG_suspend_MAX_LOG_LEVEL
+#define SYSLOG_suspend_MAX_LOG_LEVEL SYSLOG_DEFAULT_LOG_LEVEL
 #endif
 
 #ifndef SYSLOG_touch_driver_MAX_LOG_LEVEL
