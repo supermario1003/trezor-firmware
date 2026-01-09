@@ -307,10 +307,11 @@ cleanup:
 }
 
 static ts_t haptic_actuator_configuration() {
-  TSH_DECLARE;
-
-  ts_t status;
   drv262x_driver_t *drv = &g_drv262x_driver;
+
+  TSH_DECLARE;
+  ts_t status;
+
   uint8_t reg_mask = DRV262X_R8_AUTO_BRK_INT_O_STBY_MASK;
 
 #ifdef ACTUATOR_LRA
