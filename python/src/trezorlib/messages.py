@@ -682,6 +682,8 @@ class MessageType(IntEnum):
     EvoluRegistrationRequest = 2103
     EvoluGetDelegatedIdentityKey = 2104
     EvoluDelegatedIdentityKey = 2105
+    EvoluIndexManagement = 2106
+    EvoluIndexManagementResponse = 2107
     TronGetAddress = 2200
     TronAddress = 2201
     BenchmarkListNames = 9100
@@ -5632,7 +5634,6 @@ class EvoluGetDelegatedIdentityKey(protobuf.MessageType):
         2: protobuf.Field("host_static_public_key", "bytes", repeated=False, required=False, default=None),
         3: protobuf.Field("rotation_index", "uint32", repeated=False, required=False, default=None),
         4: protobuf.Field("rotate", "bool", repeated=False, required=False, default=None),
-        5: protobuf.Field("index_management", "bool", repeated=False, required=False, default=None),
     }
 
     def __init__(
@@ -5642,13 +5643,11 @@ class EvoluGetDelegatedIdentityKey(protobuf.MessageType):
         host_static_public_key: Optional["bytes"] = None,
         rotation_index: Optional["int"] = None,
         rotate: Optional["bool"] = None,
-        index_management: Optional["bool"] = None,
     ) -> None:
         self.thp_credential = thp_credential
         self.host_static_public_key = host_static_public_key
         self.rotation_index = rotation_index
         self.rotate = rotate
-        self.index_management = index_management
 
 
 class EvoluDelegatedIdentityKey(protobuf.MessageType):
@@ -5665,6 +5664,34 @@ class EvoluDelegatedIdentityKey(protobuf.MessageType):
         rotation_index: Optional["int"] = None,
     ) -> None:
         self.private_key = private_key
+        self.rotation_index = rotation_index
+
+
+class EvoluIndexManagement(protobuf.MessageType):
+    MESSAGE_WIRE_TYPE = 2106
+    FIELDS = {
+        1: protobuf.Field("rotation_index", "uint32", repeated=False, required=False, default=None),
+    }
+
+    def __init__(
+        self,
+        *,
+        rotation_index: Optional["int"] = None,
+    ) -> None:
+        self.rotation_index = rotation_index
+
+
+class EvoluIndexManagementResponse(protobuf.MessageType):
+    MESSAGE_WIRE_TYPE = 2107
+    FIELDS = {
+        1: protobuf.Field("rotation_index", "uint32", repeated=False, required=False, default=None),
+    }
+
+    def __init__(
+        self,
+        *,
+        rotation_index: Optional["int"] = None,
+    ) -> None:
         self.rotation_index = rotation_index
 
 

@@ -4172,7 +4172,6 @@ if TYPE_CHECKING:
         host_static_public_key: "AnyBytes | None"
         rotation_index: "int | None"
         rotate: "bool | None"
-        index_management: "bool | None"
 
         def __init__(
             self,
@@ -4181,7 +4180,6 @@ if TYPE_CHECKING:
             host_static_public_key: "AnyBytes | None" = None,
             rotation_index: "int | None" = None,
             rotate: "bool | None" = None,
-            index_management: "bool | None" = None,
         ) -> None:
             pass
 
@@ -4203,6 +4201,34 @@ if TYPE_CHECKING:
 
         @classmethod
         def is_type_of(cls, msg: Any) -> TypeGuard["EvoluDelegatedIdentityKey"]:
+            return isinstance(msg, cls)
+
+    class EvoluIndexManagement(protobuf.MessageType):
+        rotation_index: "int | None"
+
+        def __init__(
+            self,
+            *,
+            rotation_index: "int | None" = None,
+        ) -> None:
+            pass
+
+        @classmethod
+        def is_type_of(cls, msg: Any) -> TypeGuard["EvoluIndexManagement"]:
+            return isinstance(msg, cls)
+
+    class EvoluIndexManagementResponse(protobuf.MessageType):
+        rotation_index: "int | None"
+
+        def __init__(
+            self,
+            *,
+            rotation_index: "int | None" = None,
+        ) -> None:
+            pass
+
+        @classmethod
+        def is_type_of(cls, msg: Any) -> TypeGuard["EvoluIndexManagementResponse"]:
             return isinstance(msg, cls)
 
     class MoneroTransactionSourceEntry(protobuf.MessageType):

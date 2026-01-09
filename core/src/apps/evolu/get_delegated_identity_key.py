@@ -31,28 +31,9 @@ async def get_delegated_identity_key(
 
     from trezor import utils
     from trezor.messages import EvoluDelegatedIdentityKey
-    from trezor.ui.layouts import confirm_action
-
-    if msg.index_management:
-        index = index_management(msg)
-        return EvoluDelegatedIdentityKey(private_key=b"", rotation_index=index)
 
     if msg.rotate:
-        from trezor import TR
-
-        rotation_index = get_rotation_index(msg)
-        if rotation_index is None:
-            raise ValueError(
-                "Cannot rotate delegated identity key without a stored rotation index."
-            )
-
-        await confirm_action(
-            "secure_sync",
-            TR.suite_sync__header,
-            TR.suite_sync__rotate_key,
-        )
-
-        set_rotation_index(rotation_index + 1)
+        await rotate_index()
     else:
         if utils.USE_THP:
             await confirm_thp(msg)
@@ -60,10 +41,9 @@ async def get_delegated_identity_key(
             await confirm_no_thp()
 
     rotation_index = get_rotation_index(msg)
-    if rotation_index is None:
-        private_key = delegated_identity(0)
-    else:
-        private_key = delegated_identity(rotation_index)
+    private_key = delegated_identity(
+        rotation_index if rotation_index is not None else 0
+    )
 
     return EvoluDelegatedIdentityKey(
         private_key=private_key, rotation_index=rotation_index
@@ -110,36 +90,33 @@ def get_rotation_index(msg: EvoluGetDelegatedIdentityKey) -> int | None:
     from storage.device import get_delegated_identity_key_rotation_index
 
     rotation_index = get_delegated_identity_key_rotation_index()
+    rotation_index_int = rotation_index if rotation_index is not None else 0
 
     if isinstance(msg.rotation_index, int):
-        if rotation_index is None:
+        if msg.rotation_index <= rotation_index_int:
             rotation_index = msg.rotation_index
-            set_rotation_index(rotation_index)
-        if msg.rotation_index <= rotation_index:
-            return msg.rotation_index
         else:
             raise ValueError(
-                f"Provided rotation index {msg.rotation_index} is greater than the stored rotation index {rotation_index}."
+                f"Requested rotation index ({msg.rotation_index}) is higher than the current rotation index ({rotation_index})"
             )
 
     return rotation_index
 
 
-def index_management(msg: EvoluGetDelegatedIdentityKey) -> int | None:
-    from storage.device import get_delegated_identity_key_rotation_index
+async def rotate_index() -> None:
+    from storage.device import (
+        get_delegated_identity_key_rotation_index,
+        set_delegated_identity_key_rotation_index,
+    )
+    from trezor import TR
+    from trezor.ui.layouts import confirm_action
 
-    stored_index = get_delegated_identity_key_rotation_index()
-    if stored_index is not None:
-        return stored_index
-    else:
-        if msg.rotation_index is None:
-            return None
-        else:
-            set_rotation_index(msg.rotation_index)
-            return msg.rotation_index
-
-
-def set_rotation_index(index: int) -> None:
-    from storage.device import set_delegated_identity_key_rotation_index
-
-    set_delegated_identity_key_rotation_index(index)
+    rotation_index = get_delegated_identity_key_rotation_index()
+    if rotation_index is None:
+        rotation_index = 0
+    await confirm_action(
+        "secure_sync",
+        TR.suite_sync__header,
+        TR.suite_sync__rotate_key,
+    )
+    set_delegated_identity_key_rotation_index(rotation_index + 1)

@@ -832,8 +832,6 @@ pub struct EvoluGetDelegatedIdentityKey {
     pub rotation_index: ::std::option::Option<u32>,
     // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.rotate)
     pub rotate: ::std::option::Option<bool>,
-    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.index_management)
-    pub index_management: ::std::option::Option<bool>,
     // special fields
     // @@protoc_insertion_point(special_field:hw.trezor.messages.evolu.EvoluGetDelegatedIdentityKey.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -960,27 +958,8 @@ impl EvoluGetDelegatedIdentityKey {
         self.rotate = ::std::option::Option::Some(v);
     }
 
-    // optional bool index_management = 5;
-
-    pub fn index_management(&self) -> bool {
-        self.index_management.unwrap_or(false)
-    }
-
-    pub fn clear_index_management(&mut self) {
-        self.index_management = ::std::option::Option::None;
-    }
-
-    pub fn has_index_management(&self) -> bool {
-        self.index_management.is_some()
-    }
-
-    // Param is passed by value, moved
-    pub fn set_index_management(&mut self, v: bool) {
-        self.index_management = ::std::option::Option::Some(v);
-    }
-
     fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(5);
+        let mut fields = ::std::vec::Vec::with_capacity(4);
         let mut oneofs = ::std::vec::Vec::with_capacity(0);
         fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
             "thp_credential",
@@ -1001,11 +980,6 @@ impl EvoluGetDelegatedIdentityKey {
             "rotate",
             |m: &EvoluGetDelegatedIdentityKey| { &m.rotate },
             |m: &mut EvoluGetDelegatedIdentityKey| { &mut m.rotate },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
-            "index_management",
-            |m: &EvoluGetDelegatedIdentityKey| { &m.index_management },
-            |m: &mut EvoluGetDelegatedIdentityKey| { &mut m.index_management },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EvoluGetDelegatedIdentityKey>(
             "EvoluGetDelegatedIdentityKey",
@@ -1037,9 +1011,6 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
                 32 => {
                     self.rotate = ::std::option::Option::Some(is.read_bool()?);
                 },
-                40 => {
-                    self.index_management = ::std::option::Option::Some(is.read_bool()?);
-                },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
                 },
@@ -1064,9 +1035,6 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
         if let Some(v) = self.rotate {
             my_size += 1 + 1;
         }
-        if let Some(v) = self.index_management {
-            my_size += 1 + 1;
-        }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
         my_size
@@ -1084,9 +1052,6 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
         }
         if let Some(v) = self.rotate {
             os.write_bool(4, v)?;
-        }
-        if let Some(v) = self.index_management {
-            os.write_bool(5, v)?;
         }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -1109,7 +1074,6 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
         self.host_static_public_key = ::std::option::Option::None;
         self.rotation_index = ::std::option::Option::None;
         self.rotate = ::std::option::Option::None;
-        self.index_management = ::std::option::Option::None;
         self.special_fields.clear();
     }
 
@@ -1119,7 +1083,6 @@ impl ::protobuf::Message for EvoluGetDelegatedIdentityKey {
             host_static_public_key: ::std::option::Option::None,
             rotation_index: ::std::option::Option::None,
             rotate: ::std::option::Option::None,
-            index_management: ::std::option::Option::None,
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -1341,6 +1304,288 @@ impl ::protobuf::reflect::ProtobufValue for EvoluDelegatedIdentityKey {
     type RuntimeType = ::protobuf::reflect::rt::RuntimeTypeMessage<Self>;
 }
 
+// @@protoc_insertion_point(message:hw.trezor.messages.evolu.EvoluIndexManagement)
+#[derive(PartialEq,Clone,Default,Debug)]
+pub struct EvoluIndexManagement {
+    // message fields
+    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluIndexManagement.rotation_index)
+    pub rotation_index: ::std::option::Option<u32>,
+    // special fields
+    // @@protoc_insertion_point(special_field:hw.trezor.messages.evolu.EvoluIndexManagement.special_fields)
+    pub special_fields: ::protobuf::SpecialFields,
+}
+
+impl<'a> ::std::default::Default for &'a EvoluIndexManagement {
+    fn default() -> &'a EvoluIndexManagement {
+        <EvoluIndexManagement as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl EvoluIndexManagement {
+    pub fn new() -> EvoluIndexManagement {
+        ::std::default::Default::default()
+    }
+
+    // optional uint32 rotation_index = 1;
+
+    pub fn rotation_index(&self) -> u32 {
+        self.rotation_index.unwrap_or(0)
+    }
+
+    pub fn clear_rotation_index(&mut self) {
+        self.rotation_index = ::std::option::Option::None;
+    }
+
+    pub fn has_rotation_index(&self) -> bool {
+        self.rotation_index.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_rotation_index(&mut self, v: u32) {
+        self.rotation_index = ::std::option::Option::Some(v);
+    }
+
+    fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
+        let mut fields = ::std::vec::Vec::with_capacity(1);
+        let mut oneofs = ::std::vec::Vec::with_capacity(0);
+        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
+            "rotation_index",
+            |m: &EvoluIndexManagement| { &m.rotation_index },
+            |m: &mut EvoluIndexManagement| { &mut m.rotation_index },
+        ));
+        ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EvoluIndexManagement>(
+            "EvoluIndexManagement",
+            fields,
+            oneofs,
+        )
+    }
+}
+
+impl ::protobuf::Message for EvoluIndexManagement {
+    const NAME: &'static str = "EvoluIndexManagement";
+
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::Result<()> {
+        while let Some(tag) = is.read_raw_tag_or_eof()? {
+            match tag {
+                8 => {
+                    self.rotation_index = ::std::option::Option::Some(is.read_uint32()?);
+                },
+                tag => {
+                    ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u64 {
+        let mut my_size = 0;
+        if let Some(v) = self.rotation_index {
+            my_size += ::protobuf::rt::uint32_size(1, v);
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
+        self.special_fields.cached_size().set(my_size as u32);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::Result<()> {
+        if let Some(v) = self.rotation_index {
+            os.write_uint32(1, v)?;
+        }
+        os.write_unknown_fields(self.special_fields.unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn special_fields(&self) -> &::protobuf::SpecialFields {
+        &self.special_fields
+    }
+
+    fn mut_special_fields(&mut self) -> &mut ::protobuf::SpecialFields {
+        &mut self.special_fields
+    }
+
+    fn new() -> EvoluIndexManagement {
+        EvoluIndexManagement::new()
+    }
+
+    fn clear(&mut self) {
+        self.rotation_index = ::std::option::Option::None;
+        self.special_fields.clear();
+    }
+
+    fn default_instance() -> &'static EvoluIndexManagement {
+        static instance: EvoluIndexManagement = EvoluIndexManagement {
+            rotation_index: ::std::option::Option::None,
+            special_fields: ::protobuf::SpecialFields::new(),
+        };
+        &instance
+    }
+}
+
+impl ::protobuf::MessageFull for EvoluIndexManagement {
+    fn descriptor() -> ::protobuf::reflect::MessageDescriptor {
+        static descriptor: ::protobuf::rt::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::Lazy::new();
+        descriptor.get(|| file_descriptor().message_by_package_relative_name("EvoluIndexManagement").unwrap()).clone()
+    }
+}
+
+impl ::std::fmt::Display for EvoluIndexManagement {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for EvoluIndexManagement {
+    type RuntimeType = ::protobuf::reflect::rt::RuntimeTypeMessage<Self>;
+}
+
+// @@protoc_insertion_point(message:hw.trezor.messages.evolu.EvoluIndexManagementResponse)
+#[derive(PartialEq,Clone,Default,Debug)]
+pub struct EvoluIndexManagementResponse {
+    // message fields
+    // @@protoc_insertion_point(field:hw.trezor.messages.evolu.EvoluIndexManagementResponse.rotation_index)
+    pub rotation_index: ::std::option::Option<u32>,
+    // special fields
+    // @@protoc_insertion_point(special_field:hw.trezor.messages.evolu.EvoluIndexManagementResponse.special_fields)
+    pub special_fields: ::protobuf::SpecialFields,
+}
+
+impl<'a> ::std::default::Default for &'a EvoluIndexManagementResponse {
+    fn default() -> &'a EvoluIndexManagementResponse {
+        <EvoluIndexManagementResponse as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl EvoluIndexManagementResponse {
+    pub fn new() -> EvoluIndexManagementResponse {
+        ::std::default::Default::default()
+    }
+
+    // optional uint32 rotation_index = 1;
+
+    pub fn rotation_index(&self) -> u32 {
+        self.rotation_index.unwrap_or(0)
+    }
+
+    pub fn clear_rotation_index(&mut self) {
+        self.rotation_index = ::std::option::Option::None;
+    }
+
+    pub fn has_rotation_index(&self) -> bool {
+        self.rotation_index.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_rotation_index(&mut self, v: u32) {
+        self.rotation_index = ::std::option::Option::Some(v);
+    }
+
+    fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
+        let mut fields = ::std::vec::Vec::with_capacity(1);
+        let mut oneofs = ::std::vec::Vec::with_capacity(0);
+        fields.push(::protobuf::reflect::rt::v2::make_option_accessor::<_, _>(
+            "rotation_index",
+            |m: &EvoluIndexManagementResponse| { &m.rotation_index },
+            |m: &mut EvoluIndexManagementResponse| { &mut m.rotation_index },
+        ));
+        ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<EvoluIndexManagementResponse>(
+            "EvoluIndexManagementResponse",
+            fields,
+            oneofs,
+        )
+    }
+}
+
+impl ::protobuf::Message for EvoluIndexManagementResponse {
+    const NAME: &'static str = "EvoluIndexManagementResponse";
+
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::Result<()> {
+        while let Some(tag) = is.read_raw_tag_or_eof()? {
+            match tag {
+                8 => {
+                    self.rotation_index = ::std::option::Option::Some(is.read_uint32()?);
+                },
+                tag => {
+                    ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u64 {
+        let mut my_size = 0;
+        if let Some(v) = self.rotation_index {
+            my_size += ::protobuf::rt::uint32_size(1, v);
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
+        self.special_fields.cached_size().set(my_size as u32);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::Result<()> {
+        if let Some(v) = self.rotation_index {
+            os.write_uint32(1, v)?;
+        }
+        os.write_unknown_fields(self.special_fields.unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn special_fields(&self) -> &::protobuf::SpecialFields {
+        &self.special_fields
+    }
+
+    fn mut_special_fields(&mut self) -> &mut ::protobuf::SpecialFields {
+        &mut self.special_fields
+    }
+
+    fn new() -> EvoluIndexManagementResponse {
+        EvoluIndexManagementResponse::new()
+    }
+
+    fn clear(&mut self) {
+        self.rotation_index = ::std::option::Option::None;
+        self.special_fields.clear();
+    }
+
+    fn default_instance() -> &'static EvoluIndexManagementResponse {
+        static instance: EvoluIndexManagementResponse = EvoluIndexManagementResponse {
+            rotation_index: ::std::option::Option::None,
+            special_fields: ::protobuf::SpecialFields::new(),
+        };
+        &instance
+    }
+}
+
+impl ::protobuf::MessageFull for EvoluIndexManagementResponse {
+    fn descriptor() -> ::protobuf::reflect::MessageDescriptor {
+        static descriptor: ::protobuf::rt::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::Lazy::new();
+        descriptor.get(|| file_descriptor().message_by_package_relative_name("EvoluIndexManagementResponse").unwrap()).clone()
+    }
+}
+
+impl ::std::fmt::Display for EvoluIndexManagementResponse {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for EvoluIndexManagementResponse {
+    type RuntimeType = ::protobuf::reflect::rt::RuntimeTypeMessage<Self>;
+}
+
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n\x14messages-evolu.proto\x12\x18hw.trezor.messages.evolu\x1a\roptions.\
     proto\"\x80\x01\n\x0cEvoluGetNode\x12=\n\x1bproof_of_delegated_identity\
@@ -1352,15 +1597,17 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \rR\rsizeToAcquire\x12=\n\x1bproof_of_delegated_identity\x18\x03\x20\x02\
     (\x0cR\x18proofOfDelegatedIdentity\"e\n\x18EvoluRegistrationRequest\x12+\
     \n\x11certificate_chain\x18\x01\x20\x03(\x0cR\x10certificateChain\x12\
-    \x1c\n\tsignature\x18\x02\x20\x02(\x0cR\tsignature\"\xe4\x01\n\x1cEvoluG\
+    \x1c\n\tsignature\x18\x02\x20\x02(\x0cR\tsignature\"\xb9\x01\n\x1cEvoluG\
     etDelegatedIdentityKey\x12%\n\x0ethp_credential\x18\x01\x20\x01(\x0cR\rt\
     hpCredential\x123\n\x16host_static_public_key\x18\x02\x20\x01(\x0cR\x13h\
     ostStaticPublicKey\x12%\n\x0erotation_index\x18\x03\x20\x01(\rR\rrotatio\
-    nIndex\x12\x16\n\x06rotate\x18\x04\x20\x01(\x08R\x06rotate\x12)\n\x10ind\
-    ex_management\x18\x05\x20\x01(\x08R\x0findexManagement\"c\n\x19EvoluDele\
-    gatedIdentityKey\x12\x1f\n\x0bprivate_key\x18\x01\x20\x02(\x0cR\nprivate\
-    Key\x12%\n\x0erotation_index\x18\x02\x20\x01(\rR\rrotationIndexB=\n#com.\
-    satoshilabs.trezor.lib.protobufB\x12TrezorMessageEvolu\x80\xa6\x1d\x01\
+    nIndex\x12\x16\n\x06rotate\x18\x04\x20\x01(\x08R\x06rotate\"c\n\x19Evolu\
+    DelegatedIdentityKey\x12\x1f\n\x0bprivate_key\x18\x01\x20\x02(\x0cR\npri\
+    vateKey\x12%\n\x0erotation_index\x18\x02\x20\x01(\rR\rrotationIndex\"=\n\
+    \x14EvoluIndexManagement\x12%\n\x0erotation_index\x18\x01\x20\x01(\rR\rr\
+    otationIndex\"E\n\x1cEvoluIndexManagementResponse\x12%\n\x0erotation_ind\
+    ex\x18\x01\x20\x01(\rR\rrotationIndexB=\n#com.satoshilabs.trezor.lib.pro\
+    tobufB\x12TrezorMessageEvolu\x80\xa6\x1d\x01\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file
@@ -1379,13 +1626,15 @@ pub fn file_descriptor() -> &'static ::protobuf::reflect::FileDescriptor {
         let generated_file_descriptor = generated_file_descriptor_lazy.get(|| {
             let mut deps = ::std::vec::Vec::with_capacity(1);
             deps.push(super::options::file_descriptor().clone());
-            let mut messages = ::std::vec::Vec::with_capacity(6);
+            let mut messages = ::std::vec::Vec::with_capacity(8);
             messages.push(EvoluGetNode::generated_message_descriptor_data());
             messages.push(EvoluNode::generated_message_descriptor_data());
             messages.push(EvoluSignRegistrationRequest::generated_message_descriptor_data());
             messages.push(EvoluRegistrationRequest::generated_message_descriptor_data());
             messages.push(EvoluGetDelegatedIdentityKey::generated_message_descriptor_data());
             messages.push(EvoluDelegatedIdentityKey::generated_message_descriptor_data());
+            messages.push(EvoluIndexManagement::generated_message_descriptor_data());
+            messages.push(EvoluIndexManagementResponse::generated_message_descriptor_data());
             let mut enums = ::std::vec::Vec::with_capacity(0);
             ::protobuf::reflect::GeneratedFileDescriptor::new_generated(
                 file_descriptor_proto(),
