@@ -187,7 +187,7 @@ typedef struct {
   uint8_t registered_waveforms;
 } drv2624_waveform_list_t;
 
-// T3W1 sharp btn click effect waveform
+// Sharp btn click effect waveform
 drv2624_waveform_t sharp_btn_click_effect = {
     .sequence = {45, 63, 55, 120, 15, 100, 8, 90, 3, 0, 0, 0, 0, 0, 0},
     .time = {3, 2, 3, 1, 4, 2, 5, 3, 8, 0, 0, 0, 0, 0, 0},
