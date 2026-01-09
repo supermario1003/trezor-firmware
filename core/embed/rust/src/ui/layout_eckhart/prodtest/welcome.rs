@@ -44,13 +44,7 @@ impl Welcome {
         };
 
         // Determine initial error state and headline
-        let (error_active, error_headline) = if !is_ntc_connected() {
-            (true, "NTC Error")
-        } else if is_charging_limited() {
-            (true, "Charging Limited")
-        } else {
-            (false, "Error")
-        };
+        let (error_active, error_headline) = Self::detect_error();
 
         Self {
             id,
@@ -63,6 +57,17 @@ impl Welcome {
             // Use prepared Button component
             exit_btn: Button::with_text("Exit".into()).styled(button_cancel()),
         }
+    }
+
+    fn detect_error() -> (bool, &'static str) {
+        let (error_active, error_headline) = if !is_ntc_connected() {
+            (true, "NTC Error")
+        } else if is_charging_limited() {
+            (true, "Charging Limited")
+        } else {
+            (false, "Error")
+        };
+        (error_active, error_headline)
     }
 }
 
@@ -106,33 +111,36 @@ impl Component for Welcome {
                 if e.soc_updated || e.charging_status_changed {
                     ctx.request_paint();
                 }
-                // Error case: NTC connected changed and is now false
-                if e.ntc_connected_changed && !is_ntc_connected() {
-                    self.error_active = true;
-                    self.error_headline = "NTC Error";
-                    charging_disable();
-                    ctx.request_paint();
-                }
-                // Error case: charging limited changed and is now true
-                if e.charging_limited_changed && is_charging_limited() {
-                    self.error_active = true;
-                    self.error_headline = "Charging Limited";
-                    charging_disable();
-                    ctx.request_paint();
-                }
-                // Error case: Battery temperature jump detected event
-                if e.battery_temp_jump_detected {
-                    self.error_active = true;
-                    self.error_headline = "Battery Temp Jump";
-                    charging_disable();
-                    ctx.request_paint();
-                }
-                // Error case: Battery OCV jump detected event
-                if e.battery_ocv_jump_detected {
-                    self.error_active = true;
-                    charging_disable();
-                    self.error_headline = "Battery OCV Jump";
-                    ctx.request_paint();
+
+                if !self.error_active {
+                    // Error case: NTC connected changed and is now false
+                    if !e.ntc_connected_changed && !is_ntc_connected() {
+                        self.error_active = true;
+                        self.error_headline = "NTC Error";
+                        charging_disable();
+                        ctx.request_paint();
+                    }
+                    // Error case: charging limited changed and is now true
+                    if e.charging_limited_changed && is_charging_limited() {
+                        self.error_active = true;
+                        self.error_headline = "Charging Limited";
+                        charging_disable();
+                        ctx.request_paint();
+                    }
+                    // Error case: Battery temperature jump detected event
+                    if e.battery_temp_jump_detected {
+                        self.error_active = true;
+                        self.error_headline = "Battery Temp Jump";
+                        charging_disable();
+                        ctx.request_paint();
+                    }
+                    // Error case: Battery OCV jump detected event
+                    if e.battery_ocv_jump_detected {
+                        self.error_active = true;
+                        charging_disable();
+                        self.error_headline = "Battery OCV Jump";
+                        ctx.request_paint();
+                    }
                 }
                 None
             }
@@ -140,8 +148,15 @@ impl Component for Welcome {
                 // In error mode, delegate touch events to the prepared Button
                 if self.error_active {
                     if let Some(ButtonMsg::Clicked) = self.exit_btn.event(ctx, Event::Touch(t)) {
-                        self.error_active = false;
-                        charging_enable();
+                        let (error_active, error_headline) = Self::detect_error();
+
+                        if !error_active {
+                            self.error_active = false;
+                            charging_enable();
+                        } else {
+                            self.error_active = true;
+                            self.error_headline = error_headline;
+                        }
                         ctx.request_paint();
                     }
                 }
