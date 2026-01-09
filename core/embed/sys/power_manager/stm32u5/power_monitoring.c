@@ -83,8 +83,8 @@ void pm_pmic_data_ready(void* context, pmic_report_t* report) {
   pm_charging_controller(drv);
 
   drv->battery_ocv =
-      fuel_gauge_get_ocv(&drv->fuel_gauge, drv->pmic_data.vbat,
-                         drv->pmic_data.ibat, drv->pmic_data.ntc_temp);
+      battery_meas_to_ocv(&drv->fuel_gauge.model, drv->pmic_data.vbat,
+                          drv->pmic_data.ibat, drv->pmic_data.ntc_temp);
 
   if (!drv->fuel_gauge_initialized) {
     // Fuel gauge not initialized yet, battery SoC not available, sample the

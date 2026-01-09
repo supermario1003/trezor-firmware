@@ -96,15 +96,3 @@ void fuel_gauge_initial_guess(fuel_gauge_state_t* state, float voltage_V,
  */
 float fuel_gauge_update(fuel_gauge_state_t* state, uint32_t dt_ms,
                         float voltage_V, float current_mA, float temperature);
-
-/**
- * @brief Calculate the Open Circuit Voltage (OCV)
- *
- * @param state Pointer to EKF state structure
- * @param voltage_V Current battery voltage (V)
- * @param current_mA Current battery current (mA), positive for discharge
- * @param temperature Battery temperature (°C)
- * @return Calculated OCV (V)
- */
-float fuel_gauge_get_ocv(fuel_gauge_state_t* state, float voltage_V,
-                         float current_mA, float temperature);
