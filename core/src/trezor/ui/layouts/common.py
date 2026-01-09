@@ -135,7 +135,8 @@ async def with_info(
 
 
 async def confirm_linear_flow(
-    *confirm_factories: Callable[[], Awaitable[ui.UiResult]]
+    *confirm_factories: Callable[[], Awaitable[ui.UiResult]],
+    confirm_cancel_factory: Callable[[], LayoutObj[ui.UiResult]] | None,
 ) -> None:
     i = 0
     while i < len(confirm_factories):
@@ -143,6 +144,17 @@ async def confirm_linear_flow(
         res = await layout
         if res is trezorui_api.CONFIRMED:
             i += 1
+        elif res is trezorui_api.CANCELLED:
+            if confirm_cancel_factory is None:
+                raise ActionCancelled
+            else:
+                cancel_layout = ui.Layout(confirm_cancel_factory())
+                layout.start()
+                cancel_res = await cancel_layout.get_result()
+                if cancel_res is trezorui_api.CONFIRMED:
+                    raise ActionCancelled
+                else:
+                    continue
         elif res is trezorui_api.BACK and i > 0:
             i -= 1
         else:

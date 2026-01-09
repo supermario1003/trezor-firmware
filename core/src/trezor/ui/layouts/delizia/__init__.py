@@ -644,6 +644,7 @@ async def confirm_output(
                 info_items=info_items,
                 can_go_back=True,
             ),
+            confirm_cancel_factory=trezorui_api.confirm_cancel,
         )
     else:
         await raise_if_not_confirmed(
@@ -849,7 +850,7 @@ def confirm_value(
     info_items: (
         Iterable[tuple[str, str | list[StrPropertyType], str | None]] | None
     ) = None,
-    cancel: bool = False,
+    cancel: bool = False,  # TODO: remove this, as we get rid of internal menus and move to external menus
     cancel_text: str | None = None,
 ) -> Awaitable[ui.UiResult]:
     """General confirmation dialog, used by many other confirm_* functions."""

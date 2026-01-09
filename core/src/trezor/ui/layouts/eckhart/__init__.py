@@ -646,6 +646,7 @@ async def confirm_output(
         await confirm_linear_flow(
             lambda: interact_with_menu(address_layout, menu, "confirm_output", br_code),
             lambda: interact_with_menu(amount_layout, menu, "confirm_output", br_code),
+            confirm_cancel_factory=None,
         )
     else:
         await raise_if_not_confirmed(
