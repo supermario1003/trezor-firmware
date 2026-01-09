@@ -404,12 +404,11 @@ static ts_t haptic_play_waveform(uint8_t waveform_id) {
   ts_t status;
 
   if (drv->model == DRV2624_CHIP) {
-    TSH_CHECK(
-        waveform_id > 0 && waveform_id <= g_waveform_list.registered_waveforms,
-        TS_EINVAL);
+    TSH_CHECK_ARG(waveform_id > 0 &&
+                  waveform_id <= g_waveform_list.registered_waveforms);
 
   } else if (drv->model == DRV2625_CHIP) {
-    TSH_CHECK(waveform_id > SMOOTH_HUM_5_20 || waveform_id == 0, TS_EINVAL);
+    TSH_CHECK_ARG(waveform_id > 0 && waveform_id < SMOOTH_HUM_5_20);
 
   } else {
     // Should never happen
