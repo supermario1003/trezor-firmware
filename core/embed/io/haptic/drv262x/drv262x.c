@@ -198,10 +198,9 @@ cleanup:
 static ts_t drv262x_reg_mask_modify(i2c_bus_t *bus, uint8_t addr,
                                     uint8_t clear_mask, uint8_t set_mask) {
   TSH_DECLARE;
-
-  uint8_t reg;
   ts_t status;
 
+  uint8_t reg;
   status = drv262x_read_reg(bus, addr, &reg);
   TSH_CHECK_OK(status);
 
@@ -219,7 +218,6 @@ static ts_t haptic_load_drv2624_ram(haptic_waveform_list_t *wave_list) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
-
   ts_t status;
 
   status = drv262x_set_reg(drv->i2c_bus, 0xFD, 0x00);
@@ -284,8 +282,8 @@ cleanup:
 
 static ts_t haptic_waveform_configuration(void) {
   TSH_DECLARE;
-
   ts_t status;
+
   haptic_waveform_list_t *wave_list = &g_waveform_list;
 
   // Clear waveform list
@@ -466,7 +464,6 @@ static ts_t haptic_play_rtp(int8_t amplitude, uint16_t duration_ms) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
-
   ts_t status;
 
   if (!drv->rtp_mode) {
@@ -510,6 +507,7 @@ ts_t haptic_init(void) {
   }
 
   TSH_DECLARE;
+  ts_t status;
 
   memset(drv, 0, sizeof(drv262x_driver_t));
 
@@ -539,10 +537,8 @@ ts_t haptic_init(void) {
   drv->i2c_bus = i2c_bus_open(HAPTIC_I2C_INSTANCE);
   TSH_CHECK(drv->i2c_bus != NULL, TS_EIO);
 
-  ts_t status;
-  uint8_t reg_value;
-
   // Read haptic driver model and revision
+  uint8_t reg_value;
   status = drv262x_read_reg(drv->i2c_bus, DRV262X_R0, &reg_value);
   TSH_CHECK_OK(status);
 
@@ -644,11 +640,11 @@ ts_t haptic_play(haptic_effect_t effect) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
+  ts_t status;
 
   TSH_CHECK(drv->initialized, TS_ENOINIT);
   TSH_CHECK(drv->enabled, TS_ENOEN);
 
-  ts_t status;
   switch (effect) {
     case HAPTIC_BUTTON_PRESS:
       if (drv->model == DRV2625_CHIP) {
@@ -680,6 +676,7 @@ ts_t haptic_play_custom(int8_t amplitude_pct, uint16_t duration_ms) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
+  ts_t status;
 
   TSH_CHECK(drv->initialized, TS_ENOINIT);
   TSH_CHECK(drv->enabled, TS_ENOEN);
@@ -687,7 +684,6 @@ ts_t haptic_play_custom(int8_t amplitude_pct, uint16_t duration_ms) {
   // Clamp amplitude percentage to 0-100%
   amplitude_pct = MIN(MAX(amplitude_pct, 0), 100);
 
-  ts_t status;
   status = haptic_play_rtp((int8_t)((amplitude_pct * MAX_AMPLITUDE) / 100),
                            duration_ms);
   TSH_CHECK_OK(status);
