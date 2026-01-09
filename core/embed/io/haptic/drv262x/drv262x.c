@@ -234,9 +234,10 @@ static ts_t drv2624_load_ram(drv2624_waveform_list_t *wave_list) {
   uint16_t waveform_data_start_address =
       0x0001 + wave_list->registered_waveforms * 3;
 
-  TSH_CHECK(waveform_data_start_address < DRV2624_RAM_SIZE, TS_ENOMEM);
-
   uint16_t addr_pointer = waveform_data_start_address;
+  TSH_CHECK(waveform_data_start_address + 2 * DRV2624_LIB_MAX_SEQ_LEN <
+                DRV2624_RAM_SIZE,
+            TS_ENOMEM);
 
   // RAM Header
   for (int i = 0; i < wave_list->registered_waveforms; i++) {
@@ -256,6 +257,8 @@ static ts_t drv2624_load_ram(drv2624_waveform_list_t *wave_list) {
     TSH_CHECK_OK(status);
 
     addr_pointer += wav->length * 2;
+    TSH_CHECK(addr_pointer + DRV2624_LIB_MAX_SEQ_LEN <= DRV2624_RAM_SIZE,
+              TS_ENOMEM);
   }
 
   // Copy waveform data
