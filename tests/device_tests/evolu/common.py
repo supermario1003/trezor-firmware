@@ -16,7 +16,8 @@ TEST_host_static_private_key = curve25519.get_private_key(os.urandom(32))
 TEST_host_static_public_key = curve25519.get_public_key(TEST_host_static_private_key)
 
 
-def sign_proof(private_key: bytes, header: bytes, arguments: List[bytes]) -> bytes:
+def get_proof(client: Client, header: bytes, arguments: List[bytes]) -> bytes:
+    private_key = get_delegated_identity_key(client)
     signing_key = SigningKey.from_string(private_key, curve=NIST256p)
 
     ctx = sha256()
@@ -26,6 +27,13 @@ def sign_proof(private_key: bytes, header: bytes, arguments: List[bytes]) -> byt
         ctx.update(compact_size(len(arg)))
         ctx.update(arg)
     return signing_key.sign_digest(ctx.digest())
+
+
+def get_invalid_proof(client: Client, header: bytes, arguments: List[bytes]) -> bytes:
+    valid_proof = get_proof(client, header, arguments)
+    # tamper with the proof to make it invalid
+    invalid_proof = valid_proof[:-2] + bytes([valid_proof[-2] ^ 0xFF])
+    return invalid_proof
 
 
 class ThpPairingResult:

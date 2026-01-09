@@ -1,11 +1,10 @@
 import pytest
 
 from trezorlib import evolu
-from trezorlib.debuglink import SessionDebugWrapper as Session
 from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 
-from .common import get_delegated_identity_key, sign_proof
+from .common import get_invalid_proof, get_proof
 
 pytestmark = [
     pytest.mark.models("core"),
@@ -17,8 +16,7 @@ pytestmark = [
 
 
 def test_evolu_get_node(client: Client):
-    delegated_identity_key = get_delegated_identity_key(client)
-    proof = sign_proof(delegated_identity_key, b"EvoluGetNode", [])
+    proof = get_proof(client, b"EvoluGetNode", [])
     node = evolu.get_node(client.get_session(), proof=proof)
 
     # expected node for the SLIP-14 seed
@@ -34,8 +32,7 @@ def test_evolu_get_node(client: Client):
     passphrase=False,
 )
 def test_evolu_get_node_different_seed(client: Client):
-    delegated_identity_key = get_delegated_identity_key(client)
-    proof = sign_proof(delegated_identity_key, b"EvoluGetNode", [])
+    proof = get_proof(client, b"EvoluGetNode", [])
     node = evolu.get_node(client.get_session(), proof=proof)
 
     # expected node for the SLIP-14 seed
@@ -48,10 +45,7 @@ def test_evolu_get_node_different_seed(client: Client):
 
 
 def test_evolu_get_node_invalid_proof(client: Client):
-    delegated_identity_key = get_delegated_identity_key(client)
-    proof = sign_proof(delegated_identity_key, b"EvoluGetNode", [])
-    # tamper with the proof to make it invalid
-    invalid_proof = proof[:-2] + bytes([proof[-2] ^ 0xFFFF])
+    invalid_proof = get_invalid_proof(client, b"EvoluGetNode", [])
 
     with pytest.raises(
         TrezorFailure,

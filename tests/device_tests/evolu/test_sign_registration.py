@@ -2,13 +2,12 @@ import pytest
 from ecdsa import NIST256p, SigningKey, VerifyingKey
 
 from trezorlib import evolu
-from trezorlib.debuglink import SessionDebugWrapper as Session
 from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 
 from ...common import compact_size
-from ..check_signature import check_signature_optiga
-from .common import get_delegated_identity_key, sign_proof
+from ..certificate import check_signature_optiga
+from .common import get_delegated_identity_key, get_invalid_proof, get_proof
 
 pytestmark = pytest.mark.models("core")
 
@@ -33,9 +32,8 @@ def optiga_unavailable(client: Client) -> bool:
 def test_evolu_sign_request_t2t1(client: Client):
     challenge = bytes.fromhex("1234")
     size = 10
-    # hardcoded invalid proof but the code shouldn't reach proof validation anyway
-    proposed_value = bytes.fromhex(
-        "1b161be2bfc622b4ffd9943138ab5931e77b4c6835e29b1ac25221c74492495a912c00f488fd5f95b43085f721f36574813785c011c60cf81877ccd05700000000"
+    proof = get_proof(
+        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(4, "big")]
     )
 
     with pytest.raises(
@@ -46,7 +44,7 @@ def test_evolu_sign_request_t2t1(client: Client):
             client.get_session(),
             challenge=challenge,
             size=size,
-            proof=proposed_value,
+            proof=proof,
         )
 
 
@@ -57,8 +55,8 @@ def test_evolu_sign_request(client: Client):
     delegated_identity_key = get_delegated_identity_key(client)
     challenge = bytes.fromhex("1234")
     size = 10
-    proposed_value = sign_proof(
-        delegated_identity_key,
+    proposed_value = get_proof(
+        client,
         b"EvoluSignRegistrationRequest",
         [challenge, size.to_bytes(4, "big")],
     )
@@ -82,9 +80,8 @@ def test_evolu_sign_request_invalid_proof(client: Client):
         pytest.xfail("Optiga is not available on this device.")
     challenge = bytes.fromhex("1234")
     size = 10
-    # zeroed last 2 bytes on a hardcoded proof => it should be invalid for every test
-    proposed_value = bytes.fromhex(
-        "20dc125b51c2f596df4a9ae9ef816353dcdbf068b91ac687962742b8bd434276f60258c337e0d03211e599701a87cae8d8ac3258ce01bd484921743c2a5e990000"
+    invalid_proof = get_invalid_proof(
+        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(4, "big")]
     )
 
     with pytest.raises(
@@ -95,7 +92,7 @@ def test_evolu_sign_request_invalid_proof(client: Client):
             client.get_session(),
             challenge=challenge,
             size=size,
-            proof=proposed_value,
+            proof=invalid_proof,
         )
 
 
@@ -103,11 +100,10 @@ def test_evolu_sign_request_invalid_proof(client: Client):
 def test_evolu_sign_request_challenge_too_long(client: Client):
     if optiga_unavailable(client):
         pytest.xfail("Optiga is not available on this device.")
-    challenge = b"\x01" * 300    # 300 bytes, max is 255
+    challenge = b"\x01" * 300  # 300 bytes, max is 255
     size = 10
-    # hardcoded proof but the code shouldn't reach proof validation anyway
-    proposed_value = bytes.fromhex(
-        "1fd0b4cd0a04806eaa74ae59cc2f5a740680fc784b877deff6ffa6b9eda7d5a7d4207958c48e679b18c64d0e7fcd0e5be25eb27bcf186fbf9531eb20bc00000000"
+    proof = get_proof(
+        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(4, "big")]
     )
 
     with pytest.raises(
@@ -118,7 +114,7 @@ def test_evolu_sign_request_challenge_too_long(client: Client):
             client.get_session(),
             challenge=challenge,
             size=size,
-            proof=proposed_value,
+            proof=proof,
         )
 
 
@@ -128,9 +124,8 @@ def test_evolu_sign_request_challenge_too_short(client: Client):
         pytest.xfail("Optiga is not available on this device.")
     challenge = b""  # 0 bytes, minimum is 1
     size = 10
-    # hardcoded proof but the code shouldn't reach proof validation anyway
-    proposed_value = bytes.fromhex(
-        "1fa386d20efb38dbb3f7ae0509651fa36c8128324ef89fa1cfd104e10dced08c594f0e8f0a525a839b4fbfaa92b8c2b51163cef593f5c14fc9f1c8c48d00000000"
+    proof = get_proof(
+        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(4, "big")]
     )
 
     with pytest.raises(
@@ -141,7 +136,7 @@ def test_evolu_sign_request_challenge_too_short(client: Client):
             client.get_session(),
             challenge=challenge,
             size=size,
-            proof=proposed_value,
+            proof=proof,
         )
 
 
@@ -151,9 +146,8 @@ def test_evolu_sign_request_size_too_small(client: Client):
         pytest.xfail("Optiga is not available on this device.")
     challenge = bytes.fromhex("1234")
     size = -10
-    # hardcoded proof but the code shouldn't reach proof validation anyway
-    proposed_value = bytes.fromhex(
-        "1fa386d20efb38dbb3f7ae0509651fa36c8128324ef89fa1cfd104e10dced08c594f0e8f0a525a839b4fbfaa92b8c2b51163cef593f5c14fc9f1c8c48d00000000"
+    proof = get_proof(
+        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(4, "big", signed=True)]
     )
 
     with pytest.raises(
@@ -164,7 +158,7 @@ def test_evolu_sign_request_size_too_small(client: Client):
             client.get_session(),
             challenge=challenge,
             size=size,
-            proof=proposed_value,
+            proof=proof,
         )
 
 
@@ -174,9 +168,8 @@ def test_evolu_sign_request_size_too_large(client: Client):
         pytest.xfail("Optiga is not available on this device.")
     challenge = bytes.fromhex("1234")
     size = 0xFFFFFFFF + 1
-    # hardcoded proof but the code shouldn't reach proof validation anyway
-    proposed_value = bytes.fromhex(
-        "1fa386d20efb38dbb3f7ae0509651fa36c8128324ef89fa1cfd104e10dced08c594f0e8f0a525a839b4fbfaa92b8c2b51163cef593f5c14fc9f1c8c48d00000000"
+    proof = get_proof(
+        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(5, "big")]
     )
 
     with pytest.raises(
@@ -187,7 +180,7 @@ def test_evolu_sign_request_size_too_large(client: Client):
             client.get_session(),
             challenge=challenge,
             size=size,
-            proof=proposed_value,
+            proof=proof,
         )
 
 
@@ -198,8 +191,8 @@ def test_evolu_sign_request_data_higher_bound(client: Client):
     delegated_identity_key = get_delegated_identity_key(client)
     challenge = b"\x12" * 255
     size = 0xFFFFFFFF
-    proposed_value = sign_proof(
-        delegated_identity_key,
+    proof = get_proof(
+        client,
         b"EvoluSignRegistrationRequest",
         [challenge, size.to_bytes(4, "big")],
     )
@@ -208,7 +201,7 @@ def test_evolu_sign_request_data_higher_bound(client: Client):
         client.get_session(),
         challenge=challenge,
         size=size,
-        proof=proposed_value,
+        proof=proof,
     )
 
     data = signing_buffer(delegated_identity_key, challenge, size)
