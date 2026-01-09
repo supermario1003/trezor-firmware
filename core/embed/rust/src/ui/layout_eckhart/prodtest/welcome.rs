@@ -114,7 +114,7 @@ impl Component for Welcome {
 
                 if !self.error_active {
                     // Error case: NTC connected changed and is now false
-                    if !e.ntc_connected_changed && !is_ntc_connected() {
+                    if e.ntc_connected_changed && !is_ntc_connected() {
                         self.error_active = true;
                         self.error_headline = "NTC Error";
                         charging_disable();
