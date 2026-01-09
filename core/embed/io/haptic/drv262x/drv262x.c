@@ -97,7 +97,7 @@ typedef struct {
   bool rtp_mode;
 } drv262x_driver_t;
 
-// Custom waveform structure definition (applicable for DV2624 only)
+// DRV2624 custom waveform definition
 typedef struct {
   uint8_t sequence[DRV2624_LIB_MAX_SEQ_LEN];
   uint8_t time[DRV2624_LIB_MAX_SEQ_LEN];
@@ -105,16 +105,16 @@ typedef struct {
   uint8_t repeat;  // 0-single run, 2-three runs, 7(max)-infinite runs.
   bool linear_ramp;
   bool short_timing;  // true = 1ms units, false = 5ms units
-} haptic_waveform_t;
+} drv2624_waveform_t;
 
-// List of registered custom waveforms (applicable for DV2624 only)
+// List of DRV2624 registered custom waveforms
 typedef struct {
-  haptic_waveform_t *waveforms[DRV2624_LIB_MAX_WAVEFORMS];
+  drv2624_waveform_t *waveforms[DRV2624_LIB_MAX_WAVEFORMS];
   uint8_t registered_waveforms;
-} haptic_waveform_list_t;
+} drv2624_waveform_list_t;
 
 // T3W1 sharp btn click effect waveform
-haptic_waveform_t sharp_btn_click_effect = {
+drv2624_waveform_t sharp_btn_click_effect = {
     .sequence = {45, 63, 55, 120, 15, 100, 8, 90, 3, 0, 0, 0, 0, 0, 0},
     .time = {3, 2, 3, 1, 4, 2, 5, 3, 8, 0, 0, 0, 0, 0, 0},
     .length = 9,
@@ -123,15 +123,15 @@ haptic_waveform_t sharp_btn_click_effect = {
     .short_timing = true,
 };
 
-static haptic_waveform_list_t g_waveform_list = {.registered_waveforms = 0};
+static drv2624_waveform_list_t g_waveform_list = {.registered_waveforms = 0};
 
 // Haptic driver instance
 static drv262x_driver_t g_drv262x_driver = {
     .initialized = false,
 };
 
-static ts_t register_waveform(haptic_waveform_list_t *list,
-                              haptic_waveform_t *waveform) {
+static ts_t drv2624_register_waveform(drv2624_waveform_list_t *list,
+                                      drv2624_waveform_t *waveform) {
   TSH_DECLARE;
 
   TSH_CHECK_ARG(waveform->length != 0 &&
@@ -216,7 +216,7 @@ cleanup:
   TSH_RETURN;
 }
 
-static ts_t haptic_load_drv2624_ram(haptic_waveform_list_t *wave_list) {
+static ts_t drv2624_load_ram(drv2624_waveform_list_t *wave_list) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
@@ -238,7 +238,7 @@ static ts_t haptic_load_drv2624_ram(haptic_waveform_list_t *wave_list) {
 
   // RAM Header
   for (int i = 0; i < wave_list->registered_waveforms; i++) {
-    haptic_waveform_t *wav = wave_list->waveforms[i];
+    drv2624_waveform_t *wav = wave_list->waveforms[i];
 
     status = drv262x_set_reg(
         drv->i2c_bus, 0xFF,
@@ -259,7 +259,7 @@ static ts_t haptic_load_drv2624_ram(haptic_waveform_list_t *wave_list) {
   // Copy waveform data
   addr_pointer = waveform_data_start_address;
   for (int i = 0; i < wave_list->registered_waveforms; i++) {
-    haptic_waveform_t *wav = wave_list->waveforms[i];
+    drv2624_waveform_t *wav = wave_list->waveforms[i];
 
     for (int j = 0; j < wav->length; j++) {
       if (wav->linear_ramp) {
@@ -282,31 +282,32 @@ cleanup:
   TSH_RETURN;
 }
 
-static ts_t haptic_waveform_configuration(void) {
+static ts_t drv2624_waveform_configuration(void) {
   TSH_DECLARE;
   ts_t status;
 
-  haptic_waveform_list_t *wave_list = &g_waveform_list;
+  drv2624_waveform_list_t *wave_list = &g_waveform_list;
 
   // Clear waveform list
-  memset(wave_list, 0, sizeof(haptic_waveform_list_t));
+  memset(wave_list, 0, sizeof(drv2624_waveform_list_t));
 
   // Register haptic waveforms, waveforms are assigned IDs based on the order
   // of registration starting from 1.
 
-  TSH_CHECK_OK(register_waveform(wave_list, &sharp_btn_click_effect));  // ID:1
+  TSH_CHECK_OK(
+      drv2624_register_waveform(wave_list, &sharp_btn_click_effect));  // ID:1
 
   /** Add more waveforms here ..  */
-  // TSH_CHECK_OK(register_waveform(wave_list, &waveform2));
+  // TSH_CHECK_OK(drv2624_register_waveform(wave_list, &waveform2));
 
-  status = haptic_load_drv2624_ram(wave_list);
+  status = drv2624_load_ram(wave_list);
   TSH_CHECK_OK(status);
 
 cleanup:
   TSH_RETURN;
 }
 
-static ts_t haptic_actuator_configuration() {
+static ts_t drv262x_actuator_configuration() {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
@@ -389,7 +390,7 @@ static ts_t haptic_actuator_configuration() {
   if (drv->model == DRV2624_CHIP) {
     // DRV2624 do not have a predefined waveform library, but instead it has a
     // dedicated 1KB RAM which could be filled with custom waveforms data.
-    status = haptic_waveform_configuration();
+    status = drv2624_waveform_configuration();
     TSH_CHECK_OK(status);
   }
 
@@ -397,7 +398,7 @@ cleanup:
   TSH_RETURN;
 }
 
-static ts_t haptic_play_waveform(uint8_t waveform_id) {
+static ts_t drv262x_play_waveform(uint8_t waveform_id) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
@@ -462,7 +463,7 @@ cleanup:
   TSH_RETURN;
 }
 
-static ts_t haptic_play_rtp(int8_t amplitude, uint16_t duration_ms) {
+static ts_t drv262x_play_rtp(int8_t amplitude, uint16_t duration_ms) {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
   TSH_DECLARE;
@@ -547,7 +548,7 @@ ts_t haptic_init(void) {
   drv->model = ((reg_value >> 4) > 0) ? DRV2625_CHIP : DRV2624_CHIP;
   drv->chip_revision = (reg_value & 0x0F);
 
-  status = haptic_actuator_configuration();
+  status = drv262x_actuator_configuration();
   TSH_CHECK_OK(status);
 
   DRV262X_TRIG_TIM_FORCE_RESET();
@@ -654,21 +655,22 @@ ts_t haptic_play(haptic_effect_t effect) {
   switch (effect) {
     case HAPTIC_BUTTON_PRESS:
       if (drv->model == DRV2625_CHIP) {
-        status = haptic_play_rtp(PRESS_EFFECT_AMPLITUDE, PRESS_EFFECT_DURATION);
+        status =
+            drv262x_play_rtp(PRESS_EFFECT_AMPLITUDE, PRESS_EFFECT_DURATION);
         TSH_CHECK_OK(status);
       } else {
-        status = haptic_play_waveform(1);  // Sharp button click effect
+        status = drv262x_play_waveform(1);  // Sharp button click effect
         TSH_CHECK_OK(status);
       }
       break;
     case HAPTIC_BOOTLOADER_ENTRY:
-      status = haptic_play_rtp(BOOTLOADER_ENTRY_EFFECT_AMPLITUDE,
-                               BOOTLOADER_ENTRY_EFFECT_DURATION);
+      status = drv262x_play_rtp(BOOTLOADER_ENTRY_EFFECT_AMPLITUDE,
+                                BOOTLOADER_ENTRY_EFFECT_DURATION);
       TSH_CHECK_OK(status);
       break;
     case HAPTIC_POWER_ON:
       status =
-          haptic_play_rtp(POWER_ON_EFFECT_AMPLITUDE, POWER_ON_EFFECT_DURATION);
+          drv262x_play_rtp(POWER_ON_EFFECT_AMPLITUDE, POWER_ON_EFFECT_DURATION);
       TSH_CHECK_OK(status);
     default:
       break;
@@ -690,8 +692,8 @@ ts_t haptic_play_custom(int8_t amplitude_pct, uint16_t duration_ms) {
   // Clamp amplitude percentage to 0-100%
   amplitude_pct = MIN(MAX(amplitude_pct, 0), 100);
 
-  status = haptic_play_rtp((int8_t)((amplitude_pct * MAX_AMPLITUDE) / 100),
-                           duration_ms);
+  status = drv262x_play_rtp((int8_t)((amplitude_pct * MAX_AMPLITUDE) / 100),
+                            duration_ms);
   TSH_CHECK_OK(status);
 
 cleanup:
