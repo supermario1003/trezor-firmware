@@ -38,8 +38,6 @@
 #include <util/rsod_special.h>
 #include <util/unit_properties.h>
 
-LOG_DECLARE(bootloader);
-
 #ifdef USE_BOOT_UCB
 #include <util/boot_ucb.h>
 #endif
@@ -165,9 +163,7 @@ static secbool boot_sequence(void) {
 
 #ifdef USE_HAPTIC
   ts_t status = haptic_init();
-  if (ts_error(status)) {
-    LOG_ERR("haptic driver init failed");
-  }
+  (void)status;
 #endif
 
 #ifdef USE_RTC

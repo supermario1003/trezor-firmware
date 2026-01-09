@@ -39,8 +39,6 @@
 #include "rust_ui_prodtest.h"
 #include "sys/sysevent.h"
 
-LOG_DECLARE(prodtest);
-
 #ifdef USE_BUTTON
 #include <io/button.h>
 #endif
@@ -187,9 +185,7 @@ static void drivers_init(void) {
 #ifdef USE_HAPTIC
   ts_t status;
   status = haptic_init();
-  if (ts_error(status)) {
-    LOG_ERR("haptic driver init failed");
-  }
+  (void)status;
 #endif
 #ifdef USE_RGB_LED
   rgb_led_init();

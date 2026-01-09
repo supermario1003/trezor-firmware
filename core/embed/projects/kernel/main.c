@@ -39,8 +39,6 @@
 #include <util/rsod.h>
 #include <util/unit_properties.h>
 
-LOG_DECLARE(kernel);
-
 #ifdef USE_BUTTON
 #include <io/button.h>
 #endif
@@ -174,10 +172,7 @@ void drivers_init() {
 
 #ifdef USE_HAPTIC
   ts_t status = haptic_init();
-  if (ts_error(status)) {
-    LOG_ERR("haptic driver init failed");
-  }
-
+  (void)status;
 #endif
 
 #ifdef USE_BLE
