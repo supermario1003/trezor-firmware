@@ -28,7 +28,7 @@
 #include "drv262x.h"
 
 // Actuator configuration
-#include HAPTIC_ACTUATOR
+#include DRV262X_ACTUATOR
 
 #ifdef KERNEL_MODE
 
@@ -48,8 +48,8 @@
 // Duration of the power on effect
 #define POWER_ON_EFFECT_DURATION 50
 
-#define HAPTIC_LIB_MAX_SEQ_LEN 15
-#define HAPTIC_LIB_MAX_WAVEFORMS 20
+#define DRV2624_LIB_MAX_SEQ_LEN 15
+#define DRV2624_LIB_MAX_WAVEFORMS 20
 #define DRV2624_RAM_SIZE 1024
 
 #if !defined(ACTUATOR_LRA) && !defined(ACTUATOR_ERM)
@@ -97,17 +97,19 @@ typedef struct {
   bool rtp_mode;
 } drv262x_driver_t;
 
+// Custom waveform structure definition (applicable for DV2624 only)
 typedef struct {
-  uint8_t sequence[HAPTIC_LIB_MAX_SEQ_LEN];
-  uint8_t time[HAPTIC_LIB_MAX_SEQ_LEN];
+  uint8_t sequence[DRV2624_LIB_MAX_SEQ_LEN];
+  uint8_t time[DRV2624_LIB_MAX_SEQ_LEN];
   uint8_t length;
   uint8_t repeat;  // 0-single run, 2-three runs, 7(max)-infinite runs.
   bool linear_ramp;
   bool short_timing;  // true = 1ms units, false = 5ms units
 } haptic_waveform_t;
 
+// List of registered custom waveforms (applicable for DV2624 only)
 typedef struct {
-  haptic_waveform_t *waveforms[HAPTIC_LIB_MAX_WAVEFORMS];
+  haptic_waveform_t *waveforms[DRV2624_LIB_MAX_WAVEFORMS];
   uint8_t registered_waveforms;
 } haptic_waveform_list_t;
 
@@ -133,7 +135,7 @@ static ts_t register_waveform(haptic_waveform_list_t *list,
   TSH_DECLARE;
 
   TSH_CHECK_ARG(waveform->length != 0 &&
-                waveform->length <= HAPTIC_LIB_MAX_SEQ_LEN);
+                waveform->length <= DRV2624_LIB_MAX_SEQ_LEN);
 
   TSH_CHECK_ARG(waveform->repeat <= 7);
 
@@ -489,10 +491,10 @@ static ts_t haptic_play_rtp(int8_t amplitude, uint16_t duration_ms) {
   duration_ms = MIN(duration_ms, 6500);
 
   if (duration_ms > 0) {
-    HAPTIC_TRIG_TIM->CNT = 1;
-    HAPTIC_TRIG_TIM->CCR1 = 1;
-    HAPTIC_TRIG_TIM->ARR = duration_ms * 10;
-    HAPTIC_TRIG_TIM->CR1 |= TIM_CR1_CEN;
+    DRV262X_TRIG_TIM->CNT = 1;
+    DRV262X_TRIG_TIM->CCR1 = 1;
+    DRV262X_TRIG_TIM->ARR = duration_ms * 10;
+    DRV262X_TRIG_TIM->CR1 |= TIM_CR1_CEN;
   }
 
 cleanup:
@@ -513,28 +515,28 @@ ts_t haptic_init(void) {
 
   GPIO_InitTypeDef GPIO_InitStructure = {0};
 
-#ifdef HAPTIC_RESET_PIN
-  HAPTIC_RESET_CLK_ENA();
+#ifdef DRV262X_RESET_PIN
+  DRV262X_RESET_CLK_ENA();
   GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStructure.Pull = GPIO_NOPULL;
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStructure.Pin = HAPTIC_RESET_PIN;
-  HAL_GPIO_WritePin(HAPTIC_RESET_PORT, HAPTIC_RESET_PIN, GPIO_PIN_RESET);
-  HAL_GPIO_Init(HAPTIC_RESET_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.Pin = DRV262X_RESET_PIN;
+  HAL_GPIO_WritePin(DRV262X_RESET_PORT, DRV262X_RESET_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_Init(DRV262X_RESET_PORT, &GPIO_InitStructure);
   systick_delay_ms(1);
-  HAL_GPIO_WritePin(HAPTIC_RESET_PORT, HAPTIC_RESET_PIN, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(DRV262X_RESET_PORT, DRV262X_RESET_PIN, GPIO_PIN_SET);
   systick_delay_ms(1);
 #endif
 
-  HAPTIC_TRIG_CLK_ENA();
+  DRV262X_TRIG_CLK_ENA();
   GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStructure.Pull = GPIO_PULLDOWN;
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStructure.Pin = HAPTIC_TRIG_PIN;
-  GPIO_InitStructure.Alternate = HAPTIC_TRIG_AF;
-  HAL_GPIO_Init(HAPTIC_TRIG_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.Pin = DRV262X_TRIG_PIN;
+  GPIO_InitStructure.Alternate = DRV262X_TRIG_AF;
+  HAL_GPIO_Init(DRV262X_TRIG_PORT, &GPIO_InitStructure);
 
-  drv->i2c_bus = i2c_bus_open(HAPTIC_I2C_INSTANCE);
+  drv->i2c_bus = i2c_bus_open(DRV262X_I2C_INSTANCE);
   TSH_CHECK(drv->i2c_bus != NULL, TS_EIO);
 
   // Read haptic driver model and revision
@@ -548,13 +550,13 @@ ts_t haptic_init(void) {
   status = haptic_actuator_configuration();
   TSH_CHECK_OK(status);
 
-  HAPTIC_TRIG_TIM_FORCE_RESET();
-  HAPTIC_TRIG_TIM_RELEASE_RESET();
-  HAPTIC_TRIG_TIM_CLK_ENA();
+  DRV262X_TRIG_TIM_FORCE_RESET();
+  DRV262X_TRIG_TIM_RELEASE_RESET();
+  DRV262X_TRIG_TIM_CLK_ENA();
 
   TIM_HandleTypeDef TIM_Handle = {0};
   TIM_Handle.State = HAL_TIM_STATE_RESET;
-  TIM_Handle.Instance = HAPTIC_TRIG_TIM;
+  TIM_Handle.Instance = DRV262X_TRIG_TIM;
   TIM_Handle.Init.Period = 0;
   TIM_Handle.Init.Prescaler = SystemCoreClock / 10000;
   TIM_Handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -576,7 +578,7 @@ ts_t haptic_init(void) {
   status = hal_status_to_ts(HAL_TIM_OC_Start(&TIM_Handle, TIM_CHANNEL_1));
   TSH_CHECK_OK(status);
 
-  HAPTIC_TRIG_TIM->BDTR |= TIM_BDTR_MOE;
+  DRV262X_TRIG_TIM->BDTR |= TIM_BDTR_MOE;
 
   drv->initialized = true;
   drv->enabled = true;
@@ -595,25 +597,25 @@ void haptic_deinit(void) {
 
   GPIO_InitTypeDef GPIO_InitStructure = {0};
 
-#ifdef HAPTIC_RESET_PIN
+#ifdef DRV262X_RESET_PIN
   // External pull-down on NRST pin ensures that the DRV262X goes into
   // shutdown mode when the reset GPIO is deinitialized.
   GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStructure.Pull = GPIO_NOPULL;
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStructure.Pin = HAPTIC_RESET_PIN;
-  HAL_GPIO_Init(HAPTIC_RESET_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.Pin = DRV262X_RESET_PIN;
+  HAL_GPIO_Init(DRV262X_RESET_PORT, &GPIO_InitStructure);
 #endif
 
   GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStructure.Pull = GPIO_NOPULL;
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStructure.Pin = HAPTIC_TRIG_PIN;
-  HAL_GPIO_Init(HAPTIC_TRIG_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.Pin = DRV262X_TRIG_PIN;
+  HAL_GPIO_Init(DRV262X_TRIG_PORT, &GPIO_InitStructure);
 
-  HAPTIC_TRIG_TIM_FORCE_RESET();
-  HAPTIC_TRIG_TIM_RELEASE_RESET();
-  HAPTIC_TRIG_TIM_CLK_DIS();
+  DRV262X_TRIG_TIM_FORCE_RESET();
+  DRV262X_TRIG_TIM_RELEASE_RESET();
+  DRV262X_TRIG_TIM_CLK_DIS();
 
   memset(drv, 0, sizeof(drv262x_driver_t));
 }
