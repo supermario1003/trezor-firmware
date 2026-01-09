@@ -4,7 +4,7 @@ from trezorlib import device
 from trezorlib.debuglink import SessionDebugWrapper as Session
 
 from ..common import compact_size
-from .check_signature import check_signature_optiga, check_signature_tropic
+from .certificate import check_signature_optiga, check_signature_tropic
 
 pytestmark = pytest.mark.models("safe")
 

@@ -47,30 +47,30 @@ def test_evolu_get_node_different_seed(client: Client):
     assert node != check_value
 
 
-def test_evolu_get_node_invalid_proof(session: Session):
-    # zeroed last 2 bytes of the hardcoded proof => it should be invalid for every test
-    proof = bytes.fromhex(
-        "1f354fbb47b4679c1cb0c2c6b96a27f9a147c61ec5ef6f6c42491c839f4b7a95792d099be0f138274e5ef7896058b4de4f383f497792bb157b925e2644a79a0000"
-    )
+def test_evolu_get_node_invalid_proof(client: Client):
+    delegated_identity_key = get_delegated_identity_key(client)
+    proof = sign_proof(delegated_identity_key, b"EvoluGetNode", [])
+    # tamper with the proof to make it invalid
+    invalid_proof = proof[:-2] + bytes([proof[-2] ^ 0xFFFF])
 
     with pytest.raises(
         TrezorFailure,
         match="Invalid proof",
     ):
-        evolu.get_node(session, proof=proof)
+        evolu.get_node(client.get_session(), proof=invalid_proof)
 
 
-def test_evolu_get_node_no_proof(session: Session):
+def test_evolu_get_node_no_proof(client: Client):
     with pytest.raises(
         TrezorFailure,
         match="Invalid proof",
     ):
-        evolu.get_node(session, proof=b"")
+        evolu.get_node(client.get_session(), proof=b"")
 
 
-def test_evolu_get_node_none_proof(session: Session):
+def test_evolu_get_node_none_proof(client: Client):
     with pytest.raises(
         TrezorFailure,
         match="DataError: Failed to decode message: Missing required field. proof_of_delegated_identity",
     ):
-        evolu.get_node(session, proof=None)  # type: ignore
+        evolu.get_node(client.get_session(), proof=None)  # type: ignore

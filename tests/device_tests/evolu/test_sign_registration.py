@@ -21,39 +21,16 @@ def signing_buffer(private_key: bytes, challenge: bytes, size: int) -> bytes:
         challenge,
         size.to_bytes(4, "big"),
     ]
-    res = b""
-    for comp in components:
-        res += compact_size(len(comp)) + comp
-    return res
+    return b"".join((compact_size(len(comp)) + comp) for comp in components)
 
 
 def optiga_unavailable(client: Client) -> bool:
-    """Check if Optiga is unavailable by attempting a sign operation."""
-    try:
-        # empty challenge so the function would raise right after the Optiga check
-        challenge = bytes.fromhex("")
-        size = 1
-        # Dummy proof - the code shouldn't reach proof validation anyway
-        proposed_value = bytes.fromhex(
-            "1b161be2bfc622b4ffd9943138ab5931e77b4c6835e29b1ac25221c74492495a912c00f488fd5f95b43085f721f36574813785c011c60cf81877ccd05700000000"
-        )
-        evolu.sign_registration_request(
-            client.get_session(),
-            challenge=challenge,
-            size=size,
-            proof=proposed_value,
-        )
-        return False  # If no exception, Optiga is available
-    except TrezorFailure as e:
-        if "Optiga is not available" in str(e):
-            return True  # Optiga unavailable
-        return False  # Different error
-    except Exception:
-        return False  # Other unexpected errors
+    """Check if Optiga is unavailable from the presence of its security counter."""
+    return client.get_session().features.optiga_sec is None
 
 
 @pytest.mark.models("t2t1")
-def test_evolu_sign_request_t2t1(session: Session):
+def test_evolu_sign_request_t2t1(client: Client):
     challenge = bytes.fromhex("1234")
     size = 10
     # hardcoded invalid proof but the code shouldn't reach proof validation anyway
@@ -66,7 +43,7 @@ def test_evolu_sign_request_t2t1(session: Session):
         match="Optiga is not available",
     ):
         evolu.sign_registration_request(
-            session,
+            client.get_session(),
             challenge=challenge,
             size=size,
             proof=proposed_value,
@@ -105,7 +82,7 @@ def test_evolu_sign_request_invalid_proof(client: Client):
         pytest.xfail("Optiga is not available on this device.")
     challenge = bytes.fromhex("1234")
     size = 10
-    # zeroed last 2 bytes on a hardcoded proof => it should be invalid valid for every test
+    # zeroed last 2 bytes on a hardcoded proof => it should be invalid for every test
     proposed_value = bytes.fromhex(
         "20dc125b51c2f596df4a9ae9ef816353dcdbf068b91ac687962742b8bd434276f60258c337e0d03211e599701a87cae8d8ac3258ce01bd484921743c2a5e990000"
     )
@@ -126,7 +103,7 @@ def test_evolu_sign_request_invalid_proof(client: Client):
 def test_evolu_sign_request_challenge_too_long(client: Client):
     if optiga_unavailable(client):
         pytest.xfail("Optiga is not available on this device.")
-    challenge = bytes.fromhex("01" * 300)  # 300 bytes, max is 255
+    challenge = b"\x01" * 300    # 300 bytes, max is 255
     size = 10
     # hardcoded proof but the code shouldn't reach proof validation anyway
     proposed_value = bytes.fromhex(
@@ -219,7 +196,7 @@ def test_evolu_sign_request_data_higher_bound(client: Client):
     if optiga_unavailable(client):
         pytest.xfail("Optiga is not available on this device.")
     delegated_identity_key = get_delegated_identity_key(client)
-    challenge = bytes.fromhex("12" * 255)
+    challenge = b"\x12" * 255
     size = 0xFFFFFFFF
     proposed_value = sign_proof(
         delegated_identity_key,
