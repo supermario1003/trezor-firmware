@@ -119,7 +119,7 @@ STATIC mp_obj_t mod_trezorconfig_unlock(mp_obj_t pin, mp_obj_t ext_salt) {
     case UNLOCK_TROPIC_RESET_MAC_AND_DESTROY_FAILED:
       mp_raise_msg(&mp_type_RuntimeError,
                    MP_ERROR_TEXT("Tropic MAC and destroy reset failed."));
-    case UNLOCK_TRPOIC_RESET_SLOTS_FAILED:
+    case UNLOCK_TROPIC_RESET_SLOTS_FAILED:
       mp_raise_msg(&mp_type_RuntimeError,
                    MP_ERROR_TEXT("Tropic slots reset failed."));
     case UNLOCK_PIN_RESET_FAILS_FAILED:

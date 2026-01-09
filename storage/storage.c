@@ -1296,7 +1296,7 @@ static storage_unlock_result_t unlock(const uint8_t *pin, size_t pin_len,
                               tropic_mac_and_destroy_reset_key)) {
     memzero(tropic_mac_and_destroy_reset_key,
             sizeof(tropic_mac_and_destroy_reset_key));
-    return UNLOCK_TRPOIC_RESET_SLOTS_FAILED;
+    return UNLOCK_TROPIC_RESET_SLOTS_FAILED;
   }
   memzero(tropic_mac_and_destroy_reset_key,
           sizeof(tropic_mac_and_destroy_reset_key));
@@ -1721,7 +1721,7 @@ storage_pin_change_result_t storage_change_pin(const uint8_t *newpin,
   mpu_mode_t mpu_mode = mpu_reconfig(MPU_MODE_STORAGE);
 
   ui_progress_init(STORAGE_PIN_OP_SET);
-  ui_message = newpin_len == 0 ? VERIFYING_PIN_MSG : PROCESSING_MSG;
+  ui_message = PROCESSING_MSG;
 
   if (sectrue != storage_is_unlocked()) {
     ret = PIN_CHANGE_STORAGE_LOCKED;
