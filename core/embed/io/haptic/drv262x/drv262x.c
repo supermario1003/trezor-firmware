@@ -560,17 +560,21 @@ ts_t haptic_init(void) {
   TIM_Handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   TIM_Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
   TIM_Handle.Init.RepetitionCounter = 0;
-  HAL_TIM_OnePulse_Init(&TIM_Handle, TIM_OPMODE_SINGLE);
+  status =
+      hal_status_to_ts(HAL_TIM_OnePulse_Init(&TIM_Handle, TIM_OPMODE_SINGLE));
+  TSH_CHECK_OK(status);
 
   TIM_OnePulse_InitTypeDef TIM_OP_InitStructure = {0};
   TIM_OP_InitStructure.OCMode = TIM_OCMODE_PWM2;
   TIM_OP_InitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;
   TIM_OP_InitStructure.Pulse = 1;
   TIM_OP_InitStructure.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  HAL_TIM_OnePulse_ConfigChannel(&TIM_Handle, &TIM_OP_InitStructure,
-                                 TIM_CHANNEL_1, TIM_CHANNEL_2);
+  status = hal_status_to_ts(HAL_TIM_OnePulse_ConfigChannel(
+      &TIM_Handle, &TIM_OP_InitStructure, TIM_CHANNEL_1, TIM_CHANNEL_2));
+  TSH_CHECK_OK(status);
 
-  HAL_TIM_OC_Start(&TIM_Handle, TIM_CHANNEL_1);
+  status = hal_status_to_ts(HAL_TIM_OC_Start(&TIM_Handle, TIM_CHANNEL_1));
+  TSH_CHECK_OK(status);
 
   HAPTIC_TRIG_TIM->BDTR |= TIM_BDTR_MOE;
 
