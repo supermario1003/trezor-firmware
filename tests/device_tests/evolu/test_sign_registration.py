@@ -147,7 +147,9 @@ def test_evolu_sign_request_size_too_small(client: Client):
     challenge = bytes.fromhex("1234")
     size = -10
     proof = get_proof(
-        client, b"EvoluSignRegistrationRequest", [challenge, size.to_bytes(4, "big", signed=True)]
+        client,
+        b"EvoluSignRegistrationRequest",
+        [challenge, size.to_bytes(4, "big", signed=True)],
     )
 
     with pytest.raises(
