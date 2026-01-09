@@ -25,17 +25,16 @@
 /* Actuator control mode: ACTUATOR_CLOSED_LOOP or ACTUATOR_OPEN_LOOP */
 #define ACTUATOR_CLOSED_LOOP
 
-/* Actuator resonant frequency */
-#define ACTUATOR_FREQUENCY_HZ (260)
-#define ACTUATOR_VOLTAGE (0.7)
-
-#define ACTUATOR_LRA_PERIOD ((int)((1000000 / ACTUATOR_FREQUENCY) / 24.615))
+// ACTUATOR_LRA_PERIOD = 1/(fLRA * 24.615*10^{-6})
+#define ACTUATOR_LRA_PERIOD (156)
 
 // V = (20.58 * 10^(-3) * RATED_VOLTAGE) / sqrt (1 - (4 * tSAMPLE_TIME + 300 *
 // 10^(-6)) * fLRA) where tSAMPLE_TIME = 300us, by default
 #define ACTUATOR_RATED_VOLTAGE (27)
 
 // V = 21.32 * 10^(-3) * OD_CLAMP * sqrt(1 - fLRA * 800 * 10^(-6))
+// Note: For ld0625bc this value was increased in order to achieve higher
+// accelaration / breaking capability.
 #define ACTUATOR_OD_CLAMP (150)
 
 #define ACTUATOR_FB_BRK_FACTOR 3

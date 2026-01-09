@@ -25,10 +25,7 @@
 /* Actuator control mode: ACTUATOR_CLOSED_LOOP or ACTUATOR_OPEN_LOOP */
 #define ACTUATOR_OPEN_LOOP
 
-/* Actuator resonant frequency */
-#define ACTUATOR_FREQUENCY_HZ (260)
-#define ACTUATOR_VOLTAGE (0.7)
-
+// ACTUATOR_LRA_PERIOD = 1/(fLRA * 24.615*10^{-6})
 #define ACTUATOR_LRA_PERIOD (239)
 
 // V = (20.58 * 10^(-3) * RATED_VOLTAGE) / sqrt (1 - (4 * tSAMPLE_TIME + 300 *
