@@ -61,12 +61,12 @@
     "Actuator control mode (ACTUATOR_CLOSED_LOOP or ACTUATOR_OPEN_LOOP) not defined"
 #endif
 
-#if !defined(ACTUATOR_RATED_VOLTAGE) || ACTUATOR_RATED_VOLTAGE > 256
-#error "ACTUATOR_RATED_VOLTAGE must be defined and <= 256"
+#if !defined(ACTUATOR_RATED_VOLTAGE) || ACTUATOR_RATED_VOLTAGE > 255
+#error "ACTUATOR_RATED_VOLTAGE must be defined and <= 255"
 #endif
 
-#if !defined(ACTUATOR_OD_CLAMP) || ACTUATOR_OD_CLAMP > 256
-#error "ACTUATOR_OD_CLAMP must be defined and <= 256"
+#if !defined(ACTUATOR_OD_CLAMP) || ACTUATOR_OD_CLAMP > 255
+#error "ACTUATOR_OD_CLAMP must be defined and <= 255"
 #endif
 
 #if !defined(HAPTIC_CHIP_DRV2624) && !defined(HAPTIC_CHIP_DRV2625)
