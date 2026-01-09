@@ -48,10 +48,6 @@
 // Duration of the power on effect
 #define POWER_ON_EFFECT_DURATION 50
 
-#define DRV2624_LIB_MAX_SEQ_LEN 15
-#define DRV2624_LIB_MAX_WAVEFORMS 20
-#define DRV2624_RAM_SIZE 1024
-
 #if !defined(ACTUATOR_LRA) && !defined(ACTUATOR_ERM)
 #error "Actuator type (ACTUATOR_LRA or ACTUATOR_ERM) not defined"
 #endif
@@ -73,17 +69,14 @@
 #error "ACTUATOR_OD_CLAMP must be defined and <= 256"
 #endif
 
-typedef enum {
-  DRV2624_CHIP = 0,
-  DRV2625_CHIP = 1,
-} drv262x_chip_model_t;
+#if !defined(HAPTIC_CHIP_DRV2624) && !defined(HAPTIC_CHIP_DRV2625)
+#error "HAPTIC_CHIP_DRV2624 or HAPTIC_CHIP_DRV2625 must be defined"
+#endif
 
 // Driver state
 typedef struct {
   // Set if driver is initialized
   bool initialized;
-  drv262x_chip_model_t model;
-  uint8_t chip_revision;
 
   // I2c bus where the touch controller is connected
   i2c_bus_t *i2c_bus;
@@ -97,54 +90,10 @@ typedef struct {
   bool rtp_mode;
 } drv262x_driver_t;
 
-// DRV2624 custom waveform definition
-typedef struct {
-  uint8_t sequence[DRV2624_LIB_MAX_SEQ_LEN];
-  uint8_t time[DRV2624_LIB_MAX_SEQ_LEN];
-  uint8_t length;
-  uint8_t repeat;  // 0-single run, 2-three runs, 7(max)-infinite runs.
-  bool linear_ramp;
-  bool short_timing;  // true = 1ms units, false = 5ms units
-} drv2624_waveform_t;
-
-// List of DRV2624 registered custom waveforms
-typedef struct {
-  drv2624_waveform_t *waveforms[DRV2624_LIB_MAX_WAVEFORMS];
-  uint8_t registered_waveforms;
-} drv2624_waveform_list_t;
-
-// T3W1 sharp btn click effect waveform
-drv2624_waveform_t sharp_btn_click_effect = {
-    .sequence = {45, 63, 55, 120, 15, 100, 8, 90, 3, 0, 0, 0, 0, 0, 0},
-    .time = {3, 2, 3, 1, 4, 2, 5, 3, 8, 0, 0, 0, 0, 0, 0},
-    .length = 9,
-    .repeat = 0,
-    .linear_ramp = false,
-    .short_timing = true,
-};
-
-static drv2624_waveform_list_t g_waveform_list = {.registered_waveforms = 0};
-
 // Haptic driver instance
 static drv262x_driver_t g_drv262x_driver = {
     .initialized = false,
 };
-
-static ts_t drv2624_register_waveform(drv2624_waveform_list_t *list,
-                                      drv2624_waveform_t *waveform) {
-  TSH_DECLARE;
-
-  TSH_CHECK_ARG(waveform->length != 0 &&
-                waveform->length <= DRV2624_LIB_MAX_SEQ_LEN);
-
-  TSH_CHECK_ARG(waveform->repeat <= 7);
-
-  list->waveforms[list->registered_waveforms] = waveform;
-  list->registered_waveforms++;
-
-cleanup:
-  TSH_RETURN;
-}
 
 static ts_t drv262x_read_reg(i2c_bus_t *bus, uint8_t addr, uint8_t *value) {
   TSH_DECLARE;
@@ -211,6 +160,56 @@ static ts_t drv262x_reg_mask_modify(i2c_bus_t *bus, uint8_t addr,
 
   status = drv262x_set_reg(bus, addr, reg);
   TSH_CHECK_OK(status);
+
+cleanup:
+  TSH_RETURN;
+}
+
+#ifdef HAPTIC_CHIP_DRV2624
+
+#define DRV2624_LIB_MAX_SEQ_LEN 15
+#define DRV2624_LIB_MAX_WAVEFORMS 20
+#define DRV2624_RAM_SIZE 1024
+
+// DRV2624 custom waveform definition
+typedef struct {
+  uint8_t sequence[DRV2624_LIB_MAX_SEQ_LEN];
+  uint8_t time[DRV2624_LIB_MAX_SEQ_LEN];
+  uint8_t length;
+  uint8_t repeat;  // 0-single run, 2-three runs, 7(max)-infinite runs.
+  bool linear_ramp;
+  bool short_timing;  // true = 1ms units, false = 5ms units
+} drv2624_waveform_t;
+
+// List of DRV2624 registered custom waveforms
+typedef struct {
+  drv2624_waveform_t *waveforms[DRV2624_LIB_MAX_WAVEFORMS];
+  uint8_t registered_waveforms;
+} drv2624_waveform_list_t;
+
+// T3W1 sharp btn click effect waveform
+drv2624_waveform_t sharp_btn_click_effect = {
+    .sequence = {45, 63, 55, 120, 15, 100, 8, 90, 3, 0, 0, 0, 0, 0, 0},
+    .time = {3, 2, 3, 1, 4, 2, 5, 3, 8, 0, 0, 0, 0, 0, 0},
+    .length = 9,
+    .repeat = 0,
+    .linear_ramp = false,
+    .short_timing = true,
+};
+
+static drv2624_waveform_list_t g_waveform_list = {.registered_waveforms = 0};
+
+static ts_t drv2624_register_waveform(drv2624_waveform_list_t *list,
+                                      drv2624_waveform_t *waveform) {
+  TSH_DECLARE;
+
+  TSH_CHECK_ARG(waveform->length != 0 &&
+                waveform->length <= DRV2624_LIB_MAX_SEQ_LEN);
+
+  TSH_CHECK_ARG(waveform->repeat <= 7);
+
+  list->waveforms[list->registered_waveforms] = waveform;
+  list->registered_waveforms++;
 
 cleanup:
   TSH_RETURN;
@@ -307,6 +306,62 @@ cleanup:
   TSH_RETURN;
 }
 
+static ts_t drv2624_play_waveform(uint8_t waveform_id) {
+  drv262x_driver_t *drv = &g_drv262x_driver;
+
+  TSH_DECLARE;
+  ts_t status;
+
+  TSH_CHECK_ARG(waveform_id > 0 &&
+                waveform_id <= g_waveform_list.registered_waveforms);
+
+  drv->rtp_mode = false;
+
+  // Set driver to waveform mode
+  status = drv262x_reg_mask_modify(
+      drv->i2c_bus, DRV262X_R7, DRV262X_R7_MODE_MASK,
+      (DRV262X_R7_MODE_WAVEFORM << DRV262X_R7_MODE_POS) & DRV262X_R7_MODE_MASK);
+  TSH_CHECK_OK(status);
+
+  status = drv262x_reg_mask_modify(
+      drv->i2c_bus, DRV262X_R7, DRV262X_R7_TRIG_PIN_FUNC_MASK,
+      (DRV262X_R7_TRIG_PIN_FUNC_INT << DRV262X_R7_TRIG_PIN_FUNC_POS) &
+          DRV262X_R7_TRIG_PIN_FUNC_MASK);
+  TSH_CHECK_OK(status);
+
+  // DRV2424 could play waveforms from RAM with different timing resolution
+  // set the timing according to waveform settings.
+  if (g_waveform_list.waveforms[waveform_id - 1]->short_timing) {
+    status = drv262x_reg_mask_modify(drv->i2c_bus, DRV262X_RD,
+                                     DRV262X_RD_PLAYBACK_INTERVAL_MASK,
+                                     0x1 << DRV262X_RD_PLAYBACK_INTERVAL_POS);
+    TSH_CHECK_OK(status);
+
+  } else {
+    status = drv262x_reg_mask_modify(drv->i2c_bus, DRV262X_RD,
+                                     DRV262X_RD_PLAYBACK_INTERVAL_MASK,
+                                     0x0 << DRV262X_RD_PLAYBACK_INTERVAL_POS);
+    TSH_CHECK_OK(status);
+  }
+
+  // Set first waveform slot
+  status = drv262x_set_reg(drv->i2c_bus, DRV262X_RF, waveform_id);
+  TSH_CHECK_OK(status);
+
+  // Make sure that the second slot is empty (end of sequence)
+  status = drv262x_set_reg(drv->i2c_bus, DRV262X_R10, 0);
+  TSH_CHECK_OK(status);
+
+  // Start playback with GO bit
+  status = drv262x_set_reg(drv->i2c_bus, DRV262X_RC, DRV262X_RC_GO_MASK);
+  TSH_CHECK_OK(status);
+
+cleanup:
+  TSH_RETURN;
+}
+
+#endif  // HAPTIC_CHIP_DRV2624
+
 static ts_t drv262x_actuator_configuration() {
   drv262x_driver_t *drv = &g_drv262x_driver;
 
@@ -387,77 +442,12 @@ static ts_t drv262x_actuator_configuration() {
            DRV262X_R29_SAMPLE_TIME_MASK));
   TSH_CHECK_OK(status);
 
-  if (drv->model == DRV2624_CHIP) {
-    // DRV2624 do not have a predefined waveform library, but instead it has a
-    // dedicated 1KB RAM which could be filled with custom waveforms data.
-    status = drv2624_waveform_configuration();
-    TSH_CHECK_OK(status);
-  }
-
-cleanup:
-  TSH_RETURN;
-}
-
-static ts_t drv262x_play_waveform(uint8_t waveform_id) {
-  drv262x_driver_t *drv = &g_drv262x_driver;
-
-  TSH_DECLARE;
-  ts_t status;
-
-  if (drv->model == DRV2624_CHIP) {
-    TSH_CHECK_ARG(waveform_id > 0 &&
-                  waveform_id <= g_waveform_list.registered_waveforms);
-
-  } else if (drv->model == DRV2625_CHIP) {
-    TSH_CHECK_ARG(waveform_id > 0 && waveform_id < SMOOTH_HUM_5_20);
-
-  } else {
-    // Should never happen
-    TSH_CHECK(false, TS_EINVAL);
-  }
-
-  drv->rtp_mode = false;
-
-  // Set driver to waveform mode
-  status = drv262x_reg_mask_modify(
-      drv->i2c_bus, DRV262X_R7, DRV262X_R7_MODE_MASK,
-      (DRV262X_R7_MODE_WAVEFORM << DRV262X_R7_MODE_POS) & DRV262X_R7_MODE_MASK);
+#ifdef HAPTIC_CHIP_DRV2624
+  // DRV2624 do not have a predefined waveform library, but instead it has a
+  // dedicated 1KB RAM which could be filled with custom waveforms data.
+  status = drv2624_waveform_configuration();
   TSH_CHECK_OK(status);
-
-  status = drv262x_reg_mask_modify(
-      drv->i2c_bus, DRV262X_R7, DRV262X_R7_TRIG_PIN_FUNC_MASK,
-      (DRV262X_R7_TRIG_PIN_FUNC_INT << DRV262X_R7_TRIG_PIN_FUNC_POS) &
-          DRV262X_R7_TRIG_PIN_FUNC_MASK);
-  TSH_CHECK_OK(status);
-
-  if (drv->model == DRV2624_CHIP) {
-    // DRV2424 could play waveforms from RAM with different timing resolution
-    // set the timing according to waveform settings.
-    if (g_waveform_list.waveforms[waveform_id - 1]->short_timing) {
-      status = drv262x_reg_mask_modify(drv->i2c_bus, DRV262X_RD,
-                                       DRV262X_RD_PLAYBACK_INTERVAL_MASK,
-                                       0x1 << DRV262X_RD_PLAYBACK_INTERVAL_POS);
-      TSH_CHECK_OK(status);
-
-    } else {
-      status = drv262x_reg_mask_modify(drv->i2c_bus, DRV262X_RD,
-                                       DRV262X_RD_PLAYBACK_INTERVAL_MASK,
-                                       0x0 << DRV262X_RD_PLAYBACK_INTERVAL_POS);
-      TSH_CHECK_OK(status);
-    }
-  }
-
-  // Set first waveform slot
-  status = drv262x_set_reg(drv->i2c_bus, DRV262X_RF, waveform_id);
-  TSH_CHECK_OK(status);
-
-  // Make sure that the second slot is empty (end of sequence)
-  status = drv262x_set_reg(drv->i2c_bus, DRV262X_R10, 0);
-  TSH_CHECK_OK(status);
-
-  // Start playback with GO bit
-  status = drv262x_set_reg(drv->i2c_bus, DRV262X_RC, DRV262X_RC_GO_MASK);
-  TSH_CHECK_OK(status);
+#endif
 
 cleanup:
   TSH_RETURN;
@@ -545,8 +535,11 @@ ts_t haptic_init(void) {
   status = drv262x_read_reg(drv->i2c_bus, DRV262X_R0, &reg_value);
   TSH_CHECK_OK(status);
 
-  drv->model = ((reg_value >> 4) > 0) ? DRV2625_CHIP : DRV2624_CHIP;
-  drv->chip_revision = (reg_value & 0x0F);
+#if defined(HAPTIC_CHIP_DRV2624)
+  TSH_CHECK((reg_value >> 4) == 0x0, TS_EINVAL);
+#elif defined(HAPTIC_CHIP_DRV2625)
+  TSH_CHECK((reg_value >> 4) == 0x1, TS_EINVAL);
+#endif
 
   status = drv262x_actuator_configuration();
   TSH_CHECK_OK(status);
@@ -654,14 +647,14 @@ ts_t haptic_play(haptic_effect_t effect) {
 
   switch (effect) {
     case HAPTIC_BUTTON_PRESS:
-      if (drv->model == DRV2625_CHIP) {
-        status =
-            drv262x_play_rtp(PRESS_EFFECT_AMPLITUDE, PRESS_EFFECT_DURATION);
-        TSH_CHECK_OK(status);
-      } else {
-        status = drv262x_play_waveform(1);  // Sharp button click effect
-        TSH_CHECK_OK(status);
-      }
+
+#if defined(HAPTIC_CHIP_DRV2624)
+      status = drv2624_play_waveform(1);  // Sharp button click effect
+      TSH_CHECK_OK(status);
+#elif defined(HAPTIC_CHIP_DRV2625)
+      status = drv262x_play_rtp(PRESS_EFFECT_AMPLITUDE, PRESS_EFFECT_DURATION);
+      TSH_CHECK_OK(status);
+#endif
       break;
     case HAPTIC_BOOTLOADER_ENTRY:
       status = drv262x_play_rtp(BOOTLOADER_ENTRY_EFFECT_AMPLITUDE,
