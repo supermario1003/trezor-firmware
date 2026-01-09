@@ -25,7 +25,7 @@ def signing_buffer(private_key: bytes, challenge: bytes, size: int) -> bytes:
 
 def optiga_unavailable(client: Client) -> bool:
     """Check if Optiga is unavailable from the presence of its security counter."""
-    return client.get_session().features.optiga_sec is None
+    return client.features.optiga_sec is None
 
 
 @pytest.mark.models("t2t1")
