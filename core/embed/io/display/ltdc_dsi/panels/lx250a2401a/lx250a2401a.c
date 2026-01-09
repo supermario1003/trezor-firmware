@@ -37,6 +37,9 @@ typedef struct {
   uint8_t px;
 } lut_def_t;
 
+extern const display_configuration_t g_disp_conf[];
+extern const uint8_t conf_idx;
+
 static uint32_t gfxmmu_lut_config[2 * GFXMMU_LUT_SIZE] = {0};
 
 static uint32_t lut_add_line(uint32_t line, uint32_t offset,
@@ -75,7 +78,6 @@ const uint32_t *panel_lut_get(void) {
 
 bool panel_init(display_driver_t *drv) {
   HAL_StatusTypeDef ret;
-  static uint8_t buffer[16];
 
   // Write(Command , 0xFF);
   // Write(Parameter , 0x77);
@@ -504,22 +506,26 @@ bool panel_init(display_driver_t *drv) {
     return false;
   }
 
-  //RGB565
-  ret = HAL_DSI_ShortWrite(&drv->hlcd_dsi, 0, DSI_DCS_SHORT_PKT_WRITE_P1, 0x3A,
-                           0x50);
-  if (ret != HAL_OK) {
-    return false;
-  }
+  if (g_disp_conf[conf_idx].dsi_pixel_format == DSI_RGB565) {
+    static uint8_t buffer[16];
+    
+    //RGB565
+    ret = HAL_DSI_ShortWrite(&drv->hlcd_dsi, 0, DSI_DCS_SHORT_PKT_WRITE_P1, 0x3A,
+                            0x50);
+    if (ret != HAL_OK) {
+      return false;
+    }
 
-  ret = HAL_DSI_Read(&drv->hlcd_dsi, 0, &buffer[0], 1, DSI_DCS_SHORT_PKT_READ, 0x0C, NULL);
+    ret = HAL_DSI_Read(&drv->hlcd_dsi, 0, &buffer[0], 1, DSI_DCS_SHORT_PKT_READ, 0x0C, NULL);
 
-  if (ret != HAL_OK) {
-    return false;
+    if (ret != HAL_OK) {
+      return false;
+    }
   }
 
   // Write(Command , 0x11);
   ret = HAL_DSI_ShortWrite(&drv->hlcd_dsi, 0, DSI_DCS_SHORT_PKT_WRITE_P0, 0x11,
-                           0x00);
+                          0x00);
   if (ret != HAL_OK) {
     return false;
   }

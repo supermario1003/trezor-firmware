@@ -21,21 +21,41 @@
 
 #include <trezor_types.h>
 
-#define DSI_LANE_BYTE_FREQ_HZ 62000000ULL
+typedef struct {
+  uint64_t dsi_lane_byte_freq_hz;
+  uint32_t pll_dsi_ndiv;
+  uint32_t pll_dsi_odf;
+  uint32_t dsi_dphy_frange;
+  uint32_t dsi_tx_escape_clk_div;
+
+  uint32_t phy_timer_clk_hs2lp;
+  uint32_t phy_timer_clk_lp2hs;
+  uint32_t phy_timer_data_hs2lp;
+  uint32_t phy_timer_data_lp2hs;
+
+  uint64_t ltdc_pixel_clock_hz;
+  uint32_t pll3_n;
+  uint32_t pll3_r;
+
+  float dsi_byte_clk_to_pixel_clk_ratio;
+
+  uint32_t vfp[6];
+  uint32_t hfp;
+  uint32_t hact;
+  uint32_t lcd_width;
+
+  uint32_t dsi_pixel_format;
+} display_configuration_t;
 
 #define VSYNC 2
 #define VBP 26
-#define VFP 16 //2836 /*10Hz*/ //1144 /*20Hz*/ //580 /*30Hz*/ //298 /*40Hz*/ //129 /*50Hz*/ //16 /*60Hz*/
 #define VACT 520
 #define HSYNC 6
 #define HBP 2
-#define HFP 20 //106 //56 - 56 is the orig val, changed to 106 as the hline has been stripped by 50px, changed to 20 because the pixel clocked has been change to 15.5MHz
-#define HACT 430 /*480*/
-#define LCD_WIDTH 430 //480 // TODO: 380 is the physical dimension, 480 is used because??? Can't it be reconfigured???
 #define LCD_HEIGHT 520
 
 #define LCD_Y_OFFSET 0
-#define LCD_X_OFFSET 50 //60 // 50
+#define LCD_X_OFFSET 50
 
 #define GFXMMU_LUT_FIRST 0
 #define GFXMMU_LUT_LAST 519

@@ -41,6 +41,211 @@ display_driver_t g_display_driver = {
     .initialized = false,
 };
 
+const display_configuration_t g_disp_conf[] = {
+  { /* 62MHz, 18.518519MHz, 480px, RGB888 */ 
+    .dsi_lane_byte_freq_hz = 62000000ULL,
+    .pll_dsi_ndiv = 62,
+    .pll_dsi_odf = 2,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_450MHZ_510MHZ,
+    .dsi_tx_escape_clk_div = 4, /* 15.5MHz, ~7.75MHz (in LP) */
+
+    .phy_timer_clk_hs2lp = 11,
+    .phy_timer_clk_lp2hs = 40,
+    .phy_timer_data_hs2lp = 12,
+    .phy_timer_data_lp2hs = 23,
+
+    .ltdc_pixel_clock_hz = 18518519ULL,
+    .pll3_n = 125,
+    .pll3_r = 27,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 62.0f / 18.518519f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 56,
+    .hact = 480,
+    .lcd_width = 480,
+
+    .dsi_pixel_format = DSI_RGB888,
+  },
+  { /* 62MHz, 18.518519MHz, 430px, RGB888 */ 
+    .dsi_lane_byte_freq_hz = 62000000ULL,
+    .pll_dsi_ndiv = 62,
+    .pll_dsi_odf = 2,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_450MHZ_510MHZ,
+    .dsi_tx_escape_clk_div = 4, /* 15.5MHz, ~7.75MHz (in LP) */
+
+    .phy_timer_clk_hs2lp = 11,
+    .phy_timer_clk_lp2hs = 40,
+    .phy_timer_data_hs2lp = 12,
+    .phy_timer_data_lp2hs = 23,
+
+    .ltdc_pixel_clock_hz = 18518519ULL,
+    .pll3_n = 125,
+    .pll3_r = 27,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 62.0f / 18.518519f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 106,
+    .hact = 430,
+    .lcd_width = 430,
+
+    .dsi_pixel_format = DSI_RGB888,
+  },
+  { /* 62MHz, 18.518519MHz, 480px, RGB565 */ 
+    .dsi_lane_byte_freq_hz = 62000000ULL,
+    .pll_dsi_ndiv = 62,
+    .pll_dsi_odf = 2,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_450MHZ_510MHZ,
+    .dsi_tx_escape_clk_div = 4, /* 15.5MHz, ~7.75MHz (in LP) */
+
+    .phy_timer_clk_hs2lp = 11,
+    .phy_timer_clk_lp2hs = 40,
+    .phy_timer_data_hs2lp = 12,
+    .phy_timer_data_lp2hs = 23,
+
+    .ltdc_pixel_clock_hz = 18518519ULL,
+    .pll3_n = 125,
+    .pll3_r = 27,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 62.0f / 18.518519f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 56,
+    .hact = 480,
+    .lcd_width = 480,
+
+    .dsi_pixel_format = DSI_RGB565,
+  },
+  { /* 62MHz, 15.5MHz, 430px, RGB888 */ 
+    .dsi_lane_byte_freq_hz = 62000000ULL,
+    .pll_dsi_ndiv = 62,
+    .pll_dsi_odf = 2,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_450MHZ_510MHZ,
+    .dsi_tx_escape_clk_div = 4, /* 15.5MHz, ~7.75MHz (in LP) */
+
+    .phy_timer_clk_hs2lp = 11,
+    .phy_timer_clk_lp2hs = 40,
+    .phy_timer_data_hs2lp = 12,
+    .phy_timer_data_lp2hs = 23,
+
+    .ltdc_pixel_clock_hz = 15500000ULL,
+    .pll3_n = 124,
+    .pll3_r = 32,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 62.0f / 15.5f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 20,
+    .hact = 430,
+    .lcd_width = 430,
+
+    .dsi_pixel_format = DSI_RGB888,
+  },
+  { /* 62MHz, 15.5MHz, 430px, RGB565 */ 
+    .dsi_lane_byte_freq_hz = 62000000ULL,
+    .pll_dsi_ndiv = 62,
+    .pll_dsi_odf = 2,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_450MHZ_510MHZ,
+    .dsi_tx_escape_clk_div = 4,
+
+    .phy_timer_clk_hs2lp = 11,
+    .phy_timer_clk_lp2hs = 40,
+    .phy_timer_data_hs2lp = 12,
+    .phy_timer_data_lp2hs = 23,
+
+    .ltdc_pixel_clock_hz = 15500000ULL,
+    .pll3_n = 124,
+    .pll3_r = 32,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 62.0f / 15.5f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 20,
+    .hact = 430,
+    .lcd_width = 430,
+
+    .dsi_pixel_format = DSI_RGB565,
+  },
+  { /* 16MHz, 15.5MHz, 430px, RGB565 */ 
+    .dsi_lane_byte_freq_hz = 16000000ULL,
+    .pll_dsi_ndiv = 48,
+    .pll_dsi_odf = 6,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_120MHZ_160MHZ,
+    .dsi_tx_escape_clk_div = 2, /* 8MHz, 4Mbps */
+
+    .phy_timer_clk_hs2lp = 5,
+    .phy_timer_clk_lp2hs = 14,
+    .phy_timer_data_hs2lp = 6,
+    .phy_timer_data_lp2hs = 11,
+
+    .ltdc_pixel_clock_hz = 15500000ULL,
+    .pll3_n = 124,
+    .pll3_r = 32,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 16.0f / 15.5f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 20,
+    .hact = 430,
+    .lcd_width = 430,
+
+    .dsi_pixel_format = DSI_RGB565,
+  },
+  { /* 28.5MHz, 18.518519MHz, 480px, RGB888 */ 
+    .dsi_lane_byte_freq_hz = 28500000ULL,
+    .pll_dsi_ndiv = 57,
+    .pll_dsi_odf = 4,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_200MHZ_240MHZ,
+    .dsi_tx_escape_clk_div = 2, /* 14.25MHz, 7.125Mbps */
+
+    .phy_timer_clk_hs2lp = 7,
+    .phy_timer_clk_lp2hs = 21,
+    .phy_timer_data_hs2lp = 8,
+    .phy_timer_data_lp2hs = 15,
+
+    .ltdc_pixel_clock_hz = 18518519ULL,
+    .pll3_n = 125,
+    .pll3_r = 27,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 28.5f / 18.518519f,
+
+    .vfp = {2836 /*10Hz*/, 1144 /*20Hz*/, 580 /*30Hz*/, 298 /*40Hz*/, 129 /*50Hz*/, 16 /*60Hz*/},
+    .hfp = 56,
+    .hact = 480,
+    .lcd_width = 480,
+
+    .dsi_pixel_format = DSI_RGB888,
+  },
+  { /* 56MHz, 18.666667MHz, 480px, RGB888 - DEFAULT/CURRENT config */ 
+    .dsi_lane_byte_freq_hz = 56000000ULL,
+    .pll_dsi_ndiv = 56,
+    .pll_dsi_odf = 2,
+    .dsi_dphy_frange = DSI_DPHY_FRANGE_450MHZ_510MHZ,
+    .dsi_tx_escape_clk_div = 4,
+
+    .phy_timer_clk_hs2lp = 11,
+    .phy_timer_clk_lp2hs = 40,
+    .phy_timer_data_hs2lp = 12,
+    .phy_timer_data_lp2hs = 23,
+
+    .ltdc_pixel_clock_hz = 18666667ULL,
+    .pll3_n = 112,
+    .pll3_r = 24,
+
+    .dsi_byte_clk_to_pixel_clk_ratio = 56.0f / 18.666667f,
+
+    .vfp = {16 /*60Hz*/, 16 /*60Hz*/, 16 /*60Hz*/, 16 /*60Hz*/, 16 /*60Hz*/, 16 /*60Hz*/},
+    .hfp = 56,
+    .hact = 480,
+    .lcd_width = 480,
+
+    .dsi_pixel_format = DSI_RGB888,
+  },
+};
+
+const uint8_t conf_idx = 7;
+
 static void display_pll_deinit(void) { __HAL_RCC_PLL3_DISABLE(); }
 
 static bool display_pll_init(void) {
@@ -57,10 +262,10 @@ static bool display_pll_init(void) {
 
 #if HSE_VALUE == 32000000
   // (((32 MHz / 8) * 125) / 27) = ~60 Hz
-  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 8, 124, 8, 8, 32); 
+  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 8, g_disp_conf[conf_idx].pll3_n, 8, 8, g_disp_conf[conf_idx].pll3_r); 
 #elif HSE_VALUE == 16000000
   // (((16 MHz / 4) * 125) / 27) = ~60 Hz
-  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 4, 124, 8, 8, 32);
+  __HAL_RCC_PLL3_CONFIG(RCC_PLLSOURCE_HSE, 4, g_disp_conf[conf_idx].pll3_n, 8, 8, g_disp_conf[conf_idx].pll3_r);
 #endif
 
   __HAL_RCC_PLL3_VCIRANGE(RCC_PLLVCIRANGE_0);
@@ -136,22 +341,22 @@ static bool display_dsi_init(display_driver_t *drv) {
   /* We have 2 data lanes at 496Mbps => lane byte clock at 496/8 = 62 MHZ */
   /* We want TX escape clock at around 20MHz and under 20MHz so clock division
    * is set to 4 */
-  drv->hlcd_dsi.Init.TXEscapeCkdiv = 4; // ~15.5 MHz => ~7.75 Mbps (in LP)
+  drv->hlcd_dsi.Init.TXEscapeCkdiv = g_disp_conf[conf_idx].dsi_tx_escape_clk_div; // ~15.5 MHz => ~7.75 Mbps (in LP)
   drv->hlcd_dsi.Init.NumberOfLanes = PANEL_DSI_LANES;
-  drv->hlcd_dsi.Init.PHYFrequencyRange = DSI_DPHY_FRANGE_450MHZ_510MHZ;
+  drv->hlcd_dsi.Init.PHYFrequencyRange = g_disp_conf[conf_idx].dsi_dphy_frange;
   drv->hlcd_dsi.Init.PHYLowPowerOffset = PHY_LP_OFFSSET_0_CLKP; // LPXO - no offset
 
 #if HSE_VALUE == 32000000
   // Output lane byte clock = 62 MHz, PHY clock = 496 MHz
   // (((32 MHz / 4) * 62) / 8) = 62 MHz
-  PLLInit.PLLNDIV = 62;
+  PLLInit.PLLNDIV = g_disp_conf[conf_idx].pll_dsi_ndiv;
 #elif HSE_VALUE == 16000000
   // Output lane byte clock = 62 MHz, PHY clock = 496 MHz
   // (((16 MHz / 4) * 124) / 8) = 62 MHz
-  PLLInit.PLLNDIV = 124;
+  PLLInit.PLLNDIV = g_disp_conf[conf_idx].pll_dsi_ndiv * 2;
 #endif
   PLLInit.PLLIDF = 4;
-  PLLInit.PLLODF = 2;
+  PLLInit.PLLODF = g_disp_conf[conf_idx].pll_dsi_odf;
   PLLInit.PLLVCORange = DSI_DPHY_VCO_FRANGE_800MHZ_1GHZ;
   PLLInit.PLLChargePump = DSI_PLL_CHARGE_PUMP_2000HZ_4400HZ;
   PLLInit.PLLTuning = DSI_PLL_LOOP_FILTER_2000HZ_4400HZ;
@@ -168,19 +373,19 @@ static bool display_dsi_init(display_driver_t *drv) {
   drv->DSIVidCfg.HSPolarity = DSI_HSYNC_ACTIVE_HIGH;
   drv->DSIVidCfg.VSPolarity = DSI_VSYNC_ACTIVE_HIGH;
   drv->DSIVidCfg.DEPolarity = DSI_DATA_ENABLE_ACTIVE_HIGH;
-  drv->DSIVidCfg.ColorCoding = DSI_RGB565; //DSI_RGB888;
+  drv->DSIVidCfg.ColorCoding = g_disp_conf[conf_idx].dsi_pixel_format;
   drv->DSIVidCfg.Mode = PANEL_DSI_MODE;
-  drv->DSIVidCfg.PacketSize = LCD_WIDTH; // In burst mode, the packet size must
+  drv->DSIVidCfg.PacketSize = g_disp_conf[conf_idx].lcd_width; // In burst mode, the packet size must
                                          // be great or equal to the visible
                                          // width
   drv->DSIVidCfg.NumberOfChunks = 0; // No chunks in burst mode
   drv->DSIVidCfg.NullPacketSize = 0; // No null packet in burst mode
-  drv->DSIVidCfg.HorizontalSyncActive = HSYNC * (62.0f / 15.5f); //(62.0f/18.519f);
-  drv->DSIVidCfg.HorizontalBackPorch = HBP * (62.0f / 15.5f); //(62.0f/18.519f);
-  drv->DSIVidCfg.HorizontalLine = (HACT + HSYNC + HBP + HFP) * (62.0f / 15.5f); //(62.0f/18.519f);
+  drv->DSIVidCfg.HorizontalSyncActive = HSYNC * g_disp_conf[conf_idx].dsi_byte_clk_to_pixel_clk_ratio;
+  drv->DSIVidCfg.HorizontalBackPorch = HBP * g_disp_conf[conf_idx].dsi_byte_clk_to_pixel_clk_ratio;
+  drv->DSIVidCfg.HorizontalLine = (g_disp_conf[conf_idx].hact + HSYNC + HBP + g_disp_conf[conf_idx].hfp) * g_disp_conf[conf_idx].dsi_byte_clk_to_pixel_clk_ratio;
   drv->DSIVidCfg.VerticalSyncActive = VSYNC;
   drv->DSIVidCfg.VerticalBackPorch = VBP;
-  drv->DSIVidCfg.VerticalFrontPorch = VFP;
+  drv->DSIVidCfg.VerticalFrontPorch = g_disp_conf[conf_idx].vfp[5]; // Default to 60Hz
   drv->DSIVidCfg.VerticalActive = VACT;
   drv->DSIVidCfg.LPCommandEnable = DSI_LP_COMMAND_ENABLE;
   drv->DSIVidCfg.LPLargestPacketSize = 64;
@@ -205,10 +410,10 @@ static bool display_dsi_init(display_driver_t *drv) {
   /* LCD configuration */
   /*********************/
   // RM0456 Table 445. HS2LP and LP2HS values vs. band frequency (MHz)
-  PhyTimers.ClockLaneHS2LPTime = 11;
-  PhyTimers.ClockLaneLP2HSTime = 40;
-  PhyTimers.DataLaneHS2LPTime = 12;
-  PhyTimers.DataLaneLP2HSTime = 23;
+  PhyTimers.ClockLaneHS2LPTime = g_disp_conf[conf_idx].phy_timer_clk_hs2lp;
+  PhyTimers.ClockLaneLP2HSTime = g_disp_conf[conf_idx].phy_timer_clk_lp2hs;
+  PhyTimers.DataLaneHS2LPTime = g_disp_conf[conf_idx].phy_timer_data_hs2lp;
+  PhyTimers.DataLaneLP2HSTime = g_disp_conf[conf_idx].phy_timer_data_lp2hs;
   PhyTimers.DataLaneMaxReadTime = 0;
   PhyTimers.StopWaitTime = 7;
 
@@ -298,8 +503,8 @@ static bool display_ltdc_init(display_driver_t *drv, uint32_t fb_addr) {
   drv->hlcd_ltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
   drv->hlcd_ltdc.Init.HorizontalSync = HSYNC - 1;
   drv->hlcd_ltdc.Init.AccumulatedHBP = HSYNC + HBP - 1;
-  drv->hlcd_ltdc.Init.AccumulatedActiveW = HACT + HBP + HSYNC - 1;
-  drv->hlcd_ltdc.Init.TotalWidth = HACT + HBP + HFP + HSYNC - 1;
+  drv->hlcd_ltdc.Init.AccumulatedActiveW = g_disp_conf[conf_idx].hact + HBP + HSYNC - 1;
+  drv->hlcd_ltdc.Init.TotalWidth = g_disp_conf[conf_idx].hact + HBP + g_disp_conf[conf_idx].hfp + HSYNC - 1;
   drv->hlcd_ltdc.Init.Backcolor.Red = 0xFF; // TEST  /* Not used default value */
   drv->hlcd_ltdc.Init.Backcolor.Green = 0; /* Not used default value */
   drv->hlcd_ltdc.Init.Backcolor.Blue = 0;  /* Not used default value */
