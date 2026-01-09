@@ -32,7 +32,7 @@ def get_proof(client: Client, header: bytes, arguments: List[bytes]) -> bytes:
 def get_invalid_proof(client: Client, header: bytes, arguments: List[bytes]) -> bytes:
     valid_proof = get_proof(client, header, arguments)
     # tamper with the proof to make it invalid
-    invalid_proof = valid_proof[:-2] + bytes([valid_proof[-2] ^ 0xFF])
+    invalid_proof = valid_proof[:-2] + bytes([valid_proof[-2] ^ 0xFF]) + bytes([valid_proof[-1] ^ 0xFF])
     return invalid_proof
 
 
