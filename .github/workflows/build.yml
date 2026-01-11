@@ -1,0 +1,31 @@
+name: Build Trezor Firmware (Official)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Verify submodules
+        run: |
+          git submodule status
+          test -d vendor/ts-tvl
+
+      - name: Build firmware using official Docker script
+        run: |
+          chmod +x build-docker.sh
+          ./build-docker.sh --models T1B1 main
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trezor-model-one-firmware
+          path: build/
