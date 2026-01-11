@@ -41,7 +41,7 @@ void layoutFirmwareFingerprint(const uint8_t *hash) {
   for (int i = 0; i < 4; i++) {
     data2hex(hash + i * 8, 8, str[i]);
   }
-  layoutDialog(&bmp_icon_question, "Abort", "Continue", "Compare fingerprints",
+  layoutDialog(&bmp_icon_question, "Back", "Continue", "Authenticity Valid",
                str[0], str[1], str[2], str[3], NULL, NULL);
 }
 
@@ -71,8 +71,8 @@ static void show_unofficial_warning(const uint8_t *hash) {
 // so just show hash for a while to see bootloader started
 // but continue
 #if PRODUCTION
-  layoutDialog(&bmp_icon_warning, "Abort", "I'll take the risk", NULL,
-               "WARNING!", NULL, "Unofficial firmware", "detected.", NULL,
+  layoutDialog(&bmp_icon_warning, "No", "Yes", NULL,
+               "Firmware Check!", NULL, "Verify firmware?", "detected.", NULL,
                NULL);
 
   bool but = get_button_response();
